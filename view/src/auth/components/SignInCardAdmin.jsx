@@ -158,7 +158,6 @@ export default function SignInCardAdmin() {
             key={alertConfig.severity} 
             severity={alertConfig.severity} 
             variant="filled" 
-            sx={{ mb: 2 }}
             onClose={() => setAlertConfig(p => ({...p, show: false}))}
             sx = {{
                 mb: 2,
