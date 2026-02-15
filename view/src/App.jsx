@@ -33,7 +33,7 @@ import EventManagementLayout from "./student/pages/organize/EventManagementLayou
 import EventOverview from "./student/pages/organize/EventOverview";
 import EventParticipants from "./student/pages/organize/EventParticipants";
 import EventRoundConsole from "./student/pages/organize/EventRoundConsole";
-import AdminLogin from "./auth/pages/adminLogin";
+import AdminLogin from "./auth/pages/AdminLogin";
 
 function App(props) {
   return (
