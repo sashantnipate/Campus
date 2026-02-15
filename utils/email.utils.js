@@ -88,9 +88,10 @@ const sendPasswordResetEmail = async (userEmail, otp) => {
     return true;
 
   } catch (error) {
-    console.error("Error sending password reset email:", error);
-    throw new Error("Could not send password reset email.");
-  }
+  console.error('Forgot Password OTP FULL ERROR:', error);
+  return res.status(500).json({ message: error.message });
+}
+
 };
 
 module.exports = { sendVerificationEmail, sendPasswordResetEmail };
