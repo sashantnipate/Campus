@@ -22,7 +22,7 @@ const eventSchema = new mongoose.Schema({
   description: { type: String, required: true }, // Full detailed description
   category: { 
     type: String, 
-    enum: ['Hackathon', 'Conference', 'Workshop', 'Seminar', 'Cultural'], 
+    enum: ['Hackathon', 'Conference', 'Workshop', 'Seminar', 'Cultural', 'Sports', 'Competition', 'Webinar', 'Others'], 
     required: true 
   },
   department: { type: String, default: 'General' },

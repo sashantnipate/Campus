@@ -34,21 +34,21 @@ import CloudUploadRoundedIcon from '@mui/icons-material/CloudUploadRounded';
 import { createEvent, updateEvent } from '../../services/studentOrgService';
 
 const CATEGORIES = [
-  { value: 'hackathon', label: 'Hackathon' },
-  { value: 'workshop', label: 'Workshop' },
-  { value: 'seminar', label: 'Seminar' },
-  { value: 'conference', label: 'Conference' },
-  { value: 'cultural', label: 'Cultural' },
-  { value: 'sports', label: 'Sports' },
-  { value: 'competition', label: 'Competition' },
-  { value: 'webinar', label: 'Webinar' },
-  { value: 'others', label: 'Others' }
+  { value: 'Hackathon', label: 'Hackathon' },
+  { value: 'Workshop', label: 'Workshop' },
+  { value: 'Seminar', label: 'Seminar' },
+  { value: 'Conference', label: 'Conference' },
+  { value: 'Cultural', label: 'Cultural' },
+  { value: 'Sports', label: 'Sports' },
+  { value: 'Competition', label: 'Competition' },
+  { value: 'Webinar', label: 'Webinar' },
+  { value: 'Others', label: 'Others' }
 ];
 
 const DEFAULT_FORM = {
   title: '',
   description: '',
-  category: 'workshop',
+  category: 'Workshop',
   department: 'General',
   location: '',
   startDate: null,

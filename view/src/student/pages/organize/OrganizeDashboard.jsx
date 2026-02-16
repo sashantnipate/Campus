@@ -270,7 +270,7 @@ export default function OrganizeDashboard() {
       <Dialog open={createOrgOpen} onClose={() => setCreateOrgOpen(false)} fullWidth maxWidth="xs">
         <DialogTitle>Create Organization</DialogTitle>
         <DialogContent>
-          <TextField autoFocus margin="dense" label="Organization Name" fullWidth variant="outlined" value={orgName} onChange={(e) => setOrgName(e.target.value)} />
+          <TextField autoFocus margin="dense" label="Organization Name" fullWidth variant="outlined" value={orgName} onChange={(e) => setOrgName(e.target.value)} sx={{padding:1,margin:2}}/>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2 }}>
           <Button onClick={() => setCreateOrgOpen(false)}>Cancel</Button>
