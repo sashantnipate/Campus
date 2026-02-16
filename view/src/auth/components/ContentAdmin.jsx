@@ -6,6 +6,7 @@ import SecurityIcon from '@mui/icons-material/Security';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import Box from '@mui/material/Box';
+import logoo from '../../assets/logoo.png'
 
 const items = [
   {
@@ -33,11 +34,29 @@ const items = [
 export default function ContentAdmin() {
   return (
     <Stack sx={{ flexDirection: 'column', alignSelf: 'center', gap: 4, maxWidth: 450 }}>
-      <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-         <Typography variant="h3" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-            Admin Console
-         </Typography>
-      </Box>
+      <Box 
+  sx={{ 
+    display: { xs: 'none', md: 'flex' }, 
+    alignItems: 'center', // 1. Centers the image and text vertically
+    gap: 3                // 2. Adds breathing room between the image and text
+  }}
+>
+  <img
+    src={logoo}
+    alt="EventFlow Logo"
+    style={{
+      height: '130px',      
+      width: '80px',      
+      objectFit: 'cover', 
+      objectPosition: 'center', 
+      display: 'block',
+      borderRadius: '8px' 
+    }}
+  />
+  <Typography variant="h3" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+    Admin Console
+  </Typography>
+</Box>
       {items.map((item, index) => (
         <Stack key={index} direction="row" sx={{ gap: 2 }}>
           {item.icon}
