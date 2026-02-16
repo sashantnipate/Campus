@@ -37,6 +37,7 @@ import EventRoundConsole from "./student/pages/organize/EventRoundConsole";
 import AdminLogin from "./auth/pages/AdminLogin";
 import AdminProfile from "./admin/components/AdminProfile";
 import StudentsDataGrid from "./admin/components/StudentsDataGrid";
+import VerifyCertificate from "./components/VerifyCertificate";
 
 function App(props) {
   return (
@@ -102,6 +103,7 @@ function App(props) {
           </Route>
 
           <Route path="*" element={<Navigate to="/login" replace />} />
+          <Route path="/verify/:code" element={<VerifyCertificate/>} />
         </Routes>
       </Router>
     </AppTheme>
