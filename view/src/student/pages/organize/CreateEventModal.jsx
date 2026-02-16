@@ -34,17 +34,21 @@ import CloudUploadRoundedIcon from '@mui/icons-material/CloudUploadRounded';
 import { createEvent, updateEvent } from '../../services/studentOrgService';
 
 const CATEGORIES = [
-  { value: 'Hackathon', label: 'Hackathon' },
-  { value: 'Workshop', label: 'Workshop' },
-  { value: 'Seminar', label: 'Seminar' },
-  { value: 'Conference', label: 'Conference' },
-  { value: 'Cultural', label: 'Cultural' }
+  { value: 'hackathon', label: 'Hackathon' },
+  { value: 'workshop', label: 'Workshop' },
+  { value: 'seminar', label: 'Seminar' },
+  { value: 'conference', label: 'Conference' },
+  { value: 'cultural', label: 'Cultural' },
+  { value: 'sports', label: 'Sports' },
+  { value: 'competition', label: 'Competition' },
+  { value: 'webinar', label: 'Webinar' },
+  { value: 'others', label: 'Others' }
 ];
 
 const DEFAULT_FORM = {
   title: '',
   description: '',
-  category: 'Workshop',
+  category: 'workshop',
   department: 'General',
   location: '',
   startDate: null,
@@ -96,7 +100,7 @@ export default function CreateEventModal({ open, onClose, orgId, onSuccess, exis
         setFormData({
           title: existingEvent.title || '',
           description: existingEvent.description || '',
-          category: existingEvent.category || 'Workshop',
+          category: (existingEvent.category || 'workshop')?.toString().toLowerCase(),
           department: existingEvent.department || 'General',
           location: existingEvent.location || '',
           startDate: existingEvent.startDate ? new Date(existingEvent.startDate) : null,

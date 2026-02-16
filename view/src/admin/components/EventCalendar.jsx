@@ -118,13 +118,17 @@ export default function EventCalendar() {
     setSelectedEvent(null);
   };
 
-  const getCatCount = (cat) => eventsData.filter(e => e.category === cat).length;
+  const getCatCount = (cat) => eventsData.filter(e => (e.category || '').toString().toLowerCase() === cat.toString().toLowerCase()).length;
   const categories = [
     { label: 'All', count: eventsData.length },
     { label: 'Hackathons', count: getCatCount('hackathon') },
     { label: 'Conferences', count: getCatCount('conference') },
     { label: 'Workshops', count: getCatCount('workshop') },
     { label: 'Seminars', count: getCatCount('seminar') },
+    { label: 'Sports', count: getCatCount('sports') },
+    { label: 'Competitions', count: getCatCount('competition') },
+    { label: 'Webinars', count: getCatCount('webinar') },
+    { label: 'Others', count: getCatCount('others') }
   ];
 
   return (

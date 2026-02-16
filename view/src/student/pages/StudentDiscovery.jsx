@@ -87,7 +87,7 @@ export default function StudentDiscovery() {
     return events.filter(ev => {
       const matchesSearch = ev.title?.toLowerCase().includes(searchTerm.toLowerCase()) || 
                             ev.description?.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesCategory = categoryFilter === 'All' || ev.category === categoryFilter;
+      const matchesCategory = categoryFilter === 'All' || ((ev.category || '').toString().toLowerCase() === categoryFilter.toString().toLowerCase());
       return matchesSearch && matchesCategory;
     });
   }, [events, searchTerm, categoryFilter]);
