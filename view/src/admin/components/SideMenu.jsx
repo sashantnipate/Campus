@@ -69,7 +69,7 @@ export default function SideMenu({ activeTab }) {
             alt="EventFlow Logo"
             style={{
               height: '130px',     // Adjusted for better sidebar proportions  
-              width: '100px',      
+              width: '60px',      
               objectFit: 'cover', 
               objectPosition: 'center', 
               display: 'block',

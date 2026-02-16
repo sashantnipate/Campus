@@ -75,7 +75,7 @@ export default function StudentSideMenu({ activeTab, setActiveTab }) {
           alt="EventFlow Logo"
           style={{
             height: '130px',     
-            width: '100px',       // 1. You MUST set a fixed width to create the "crop box"
+            width: '60px',       // 1. You MUST set a fixed width to create the "crop box"
             objectFit: 'cover',  // 2. This crops the image to fill the 40x40 box
             objectPosition: 'center', // 3. (Optional) Focuses the crop on the center
             display: 'block',
@@ -87,7 +87,7 @@ export default function StudentSideMenu({ activeTab, setActiveTab }) {
           variant="h6"
           sx={{
             fontWeight: 700,
-            fontSize: '1.3rem',
+            fontSize: '1.5rem',
             color: '#1b129cff',
             whiteSpace: 'nowrap',
           }}
