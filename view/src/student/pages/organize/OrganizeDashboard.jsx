@@ -56,6 +56,13 @@ export default function OrganizeDashboard() {
   const [orgName, setOrgName] = React.useState('');
   const [joinCode, setJoinCode] = React.useState('');
 
+  const statusColorMap = {
+    Pending: '#FFEB3B',
+    Approved: '#4CAF50',
+    Rejected: '#F44336',
+    Completed: '#2196F3'
+  };
+
   // --- HELPERS ---
   const showSnack = (message, severity = 'success') => {
     setSnackbar({ open: true, message, severity });
@@ -132,7 +139,7 @@ export default function OrganizeDashboard() {
       {/* --- TABS --- */}
       <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 4 }}>
         <Tabs value={tabIndex} onChange={(e, v) => setTabIndex(v)} aria-label="dashboard tabs">
-          <Tab icon={<PersonRoundedIcon />} iconPosition="start" label="Solo Events" sx={{ fontWeight: 500, minHeight: 48 }} />
+          <Tab icon={<PersonRoundedIcon />} iconPosition="start" label="My Events" sx={{ fontWeight: 500, minHeight: 48 }} />
           <Tab icon={<GroupsRoundedIcon />} iconPosition="start" label="My Organizations" sx={{ fontWeight: 500, minHeight: 48 }} />
         </Tabs>
       </Box>
@@ -171,9 +178,23 @@ export default function OrganizeDashboard() {
               {/* List Events */}
               {soloEvents.map((ev) => (
                 <Grid item xs={12} md={6} lg={4} key={ev._id}>
-                  <Card sx={{ borderRadius: '16px', border: '1px solid', borderColor: 'divider', boxShadow: 'none', height: '100%', display: 'flex', flexDirection: 'column' }}>
+                  <Card sx={{ borderRadius: '16px', border: '3px solid', borderColor: 'divider', boxShadow: 'none', height: '100%', display: 'flex', flexDirection: 'column', bgcolor: "#f9f9f9" }}>
                     <CardContent sx={{ flexGrow: 1 }}>
-                      <Chip label={ev.status} size="small" color={ev.status === 'Pending' ? 'warning' : 'success'} sx={{ mb: 1, fontWeight: 700, borderRadius: '6px' }} />
+                      <Chip
+                        label={ev.status}
+                        size="small"
+                        sx={{
+                          mb: 1,
+                          fontWeight: 700,
+                          borderRadius: '6px',
+                          bgcolor: statusColorMap[ev.status] || 'grey',
+                          color: '#000000 !important',
+                          border: 'none',
+                          '& .MuiChip-label': {
+                            color: '#000000 !important'
+                          }
+                        }}
+                      />
                       <Typography variant="h6" fontWeight={700} gutterBottom>{ev.title}</Typography>
                       
                       <Stack direction="row" spacing={1} alignItems="center" color="text.secondary" sx={{ mb: 2 }}>
