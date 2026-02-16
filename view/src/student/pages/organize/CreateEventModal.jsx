@@ -38,7 +38,11 @@ const CATEGORIES = [
   { value: 'Workshop', label: 'Workshop' },
   { value: 'Seminar', label: 'Seminar' },
   { value: 'Conference', label: 'Conference' },
-  { value: 'Cultural', label: 'Cultural' }
+  { value: 'Cultural', label: 'Cultural' },
+  { value: 'Sports', label: 'Sports' },
+  { value: 'Competition', label: 'Competition' },
+  { value: 'Webinar', label: 'Webinar' },
+  { value: 'Others', label: 'Others' }
 ];
 
 const DEFAULT_FORM = {
@@ -96,7 +100,7 @@ export default function CreateEventModal({ open, onClose, orgId, onSuccess, exis
         setFormData({
           title: existingEvent.title || '',
           description: existingEvent.description || '',
-          category: existingEvent.category || 'Workshop',
+          category: (existingEvent.category || 'workshop')?.toString().toLowerCase(),
           department: existingEvent.department || 'General',
           location: existingEvent.location || '',
           startDate: existingEvent.startDate ? new Date(existingEvent.startDate) : null,

@@ -113,7 +113,7 @@ export default function EventManagementTable() {
 
   const filteredRows = filterCategory === 'All' 
     ? rows 
-    : rows.filter((r) => r.category === filterCategory);
+    : rows.filter((r) => (r.category || '').toString().toLowerCase() === filterCategory.toString().toLowerCase());
 
   return (
     <Card variant="outlined">
@@ -135,6 +135,10 @@ export default function EventManagementTable() {
               <MenuItem value="Conference">Conference</MenuItem>
               <MenuItem value="Workshop">Workshop</MenuItem>
               <MenuItem value="Cultural">Cultural</MenuItem>
+              <MenuItem value="Sports">Sports</MenuItem>
+              <MenuItem value="Competition">Competition</MenuItem>
+              <MenuItem value="Webinar">Webinar</MenuItem>
+              <MenuItem value="Others">Others</MenuItem>
             </Select>
           </FormControl>
         }
