@@ -19,38 +19,38 @@ const getUserProfile = async (req, res) => {
 
 const updateUserProfile = async (req, res) => {
   try {
-    const { userId } = req.params;
-    const { name, profileImage, studentProfile } = req.body;
+    const { name, profileImage, adminProfile, studentProfile } = req.body;
+    
+    const user = await User.findById(req.params.id);
 
-    const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: 'User not found' });
     }
 
-    if (name) user.name = name;
-    if (profileImage) user.profileImage = profileImage;
+    user.name = name || user.name;
+    user.profileImage = profileImage || user.profileImage;
 
-    
-    if (studentProfile) {
-      user.studentProfile = {
-        ...user.studentProfile, 
-        rollNumber: studentProfile.rollNumber,
-        department: studentProfile.department,
-        course: studentProfile.course,
-        yearOfStudy: studentProfile.yearOfStudy
-      };
+    if (user.role === 'Admin' && adminProfile) {
+        user.adminProfile = {
+            position: adminProfile.position || user.adminProfile.position,
+            department: adminProfile.department || user.adminProfile.department
+        };
+    } else if (user.role === 'Student' && studentProfile) {
+        user.studentProfile = { ...user.studentProfile, ...studentProfile };
     }
 
     const updatedUser = await user.save();
 
-    const responseData = updatedUser.toObject();
-    delete responseData.password;
+    const responseUser = updatedUser.toObject();
+    delete responseUser.password;
 
-    res.status(200).json(responseData);
-
+    res.status(200).json(responseUser);
   } catch (error) {
-    console.error("Error updating profile:", error);
-    res.status(500).json({ message: "Failed to update profile" });
+    console.error(error);
+    if (error.code === 'LIMIT_FILE_SIZE') {
+        return res.status(400).json({ message: 'Image too large' });
+    }
+    res.status(500).json({ message: 'Server Error' });
   }
 };
 

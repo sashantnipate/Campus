@@ -7,6 +7,7 @@ const studentRoutes = require('./routes/student.routes');
 const organizationRoutes = require('./routes/organization.routes');
 const userRoutes = require('./routes/user.routes');
 const certificateRoutes = require('./routes/certificate.routes');
+const dashboardRoutes = require('./routes/dashboard.routes');
 const app = express();
 
 app.use(cors({
@@ -25,6 +26,7 @@ app.use('/api/student', studentRoutes);
 app.use('/api/orgs', organizationRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/certificates', certificateRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 app.get('/', (req, res) => {
   res.status(200).json({ message: 'Welcome to the University API!' });
 });
