@@ -1,34 +1,27 @@
-import * as React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useTheme } from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import Avatar from '@mui/material/Avatar';
-import Stack from '@mui/material/Stack';
-import TextField from '@mui/material/TextField';
-import Grid from '@mui/material/Grid';
-import IconButton from '@mui/material/IconButton';
-import CircularProgress from '@mui/material/CircularProgress';
+import { 
+  Box, Paper, Typography, Button, Avatar, Stack, TextField, Grid, 
+  IconButton, CircularProgress, Alert, Snackbar 
+} from '@mui/material';
 
 // Icons
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import EmailRoundedIcon from '@mui/icons-material/EmailRounded';
 import CameraAltRoundedIcon from '@mui/icons-material/CameraAltRounded';
+import AdminPanelSettingsRoundedIcon from '@mui/icons-material/AdminPanelSettingsRounded';
+import BusinessRoundedIcon from '@mui/icons-material/BusinessRounded';
 
-// API Service
-//import { updateAdminProfile } from '../services/adminProfileService';
+// Service Import (Reusing your existing service)
+import { fetchUserProfile, updateUserProfile } from '../services/userService';
 
-// --- Helper: Label above the input field ---
+// Helper Component for Labels
 const FieldLabel = ({ label }) => (
   <Typography 
     variant="caption" 
     sx={{ 
-      fontWeight: 600, 
-      color: 'text.primary', 
-      mb: 1, 
-      display: 'block',
-      fontSize: '0.875rem' 
+      fontWeight: 600, color: 'text.secondary', mb: 0.5, 
+      display: 'block', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.5px' 
     }}
   >
     {label}
@@ -37,93 +30,131 @@ const FieldLabel = ({ label }) => (
 
 export default function AdminProfile() {
   const theme = useTheme();
-  
-  const [isEditing, setIsEditing] = React.useState(false);
-  const [isSaving, setIsSaving] = React.useState(false);
+  const fileInputRef = useRef(null);
 
-  // Load User Data
-  const user = JSON.parse(localStorage.getItem('user')) || { 
-    name: 'Admin User', 
-    email: 'admin@system.com',
-    position: 'Senior Administrator',
-    department: 'IT Operations',
-    avatar: ''
-  };
+  // --- States ---
+  const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [notification, setNotification] = useState({ open: false, message: '', severity: 'success' });
 
-  const [formData, setFormData] = React.useState({
-    name: user.name,
-    email: user.email,
-    position: user.position || 'Administrator',
-    department: user.department || 'Management',
+  // Form State (Admin Specific)
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    profileImage: '',
+    position: '',    // Mapped from adminProfile.position
+    department: ''   // Mapped from adminProfile.department
   });
 
+  // --- 1. Fetch Data ---
+  useEffect(() => {
+    const loadProfile = async () => {
+      try {
+        const storedUser = JSON.parse(localStorage.getItem('user'));
+        const userId = storedUser?.id || storedUser?._id;
+
+        if (!userId) throw new Error("No user ID found.");
+
+        const user = await fetchUserProfile(userId);
+
+        setFormData({
+          name: user.name || '',
+          email: user.email || '',
+          profileImage: user.profileImage || '',
+          // Use Optional Chaining for adminProfile fields
+          position: user.adminProfile?.position || '',
+          department: user.adminProfile?.department || ''
+        });
+      } catch (err) {
+        setNotification({ open: true, message: "Failed to load profile.", severity: "error" });
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadProfile();
+  }, []);
+
+  // --- 2. Handlers ---
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSave = async () => {
-    setIsSaving(true);
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
-      const updatedUser = { ...user, ...formData };
-      localStorage.setItem('user', JSON.stringify(updatedUser));
-      
-      setIsEditing(false);
-    } catch (err) {
-      alert("Failed to update profile.");
-    } finally {
-      setIsSaving(false);
+  const handleImageClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData({ ...formData, profileImage: reader.result });
+      };
+      reader.readAsDataURL(file);
     }
   };
 
-  // --- Clean Input Style ---
-  const inputStyle = {
-    '& .MuiOutlinedInput-root': {
-      borderRadius: '8px',
-      backgroundColor: isEditing ? 'transparent' : (theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : '#F9FAFB'),
-      transition: 'all 0.2s ease',
-      '& fieldset': { 
-        borderColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.2)' : '#E0E0E0', 
-      },
-      '&:hover fieldset': { 
-        borderColor: isEditing ? theme.palette.primary.main : '#E0E0E0' 
-      },
-      '&.Mui-focused fieldset': { 
-        borderColor: theme.palette.primary.main, 
-        borderWidth: '2px' 
-      },
-      '& input': {
-        py: 1.5,
-        fontWeight: 500,
-        color: 'text.primary'
-      }
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const storedUser = JSON.parse(localStorage.getItem('user'));
+      const userId = storedUser?.id || storedUser?._id;
+
+      // Construct Payload matching User Schema structure
+      const payload = {
+        name: formData.name,
+        profileImage: formData.profileImage,
+        adminProfile: {
+          position: formData.position,
+          department: formData.department
+        }
+      };
+
+      await updateUserProfile(userId, payload);
+
+      setNotification({ open: true, message: "Admin profile updated!", severity: "success" });
+      setIsEditing(false);
+
+      // Update Local Storage name/image if changed
+      const updatedLocalStorage = { ...storedUser, name: formData.name, profileImage: formData.profileImage };
+      localStorage.setItem('user', JSON.stringify(updatedLocalStorage));
+
+    } catch (err) {
+      console.error(err);
+      setNotification({ open: true, message: "Update failed. Check image size.", severity: "error" });
+    } finally {
+      setSaving(false);
     }
   };
+
+  // --- Styles ---
+  const inputStyle = {
+    '& .MuiOutlinedInput-root': {
+      borderRadius: '12px',
+      bgcolor: isEditing ? 'transparent' : (theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : '#F9FAFB'),
+      '& fieldset': { borderColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.2)' : '#E0E0E0' },
+      '&:hover fieldset': { borderColor: isEditing ? theme.palette.primary.main : '#E0E0E0' },
+      '&.Mui-focused fieldset': { borderColor: theme.palette.primary.main },
+      '& input': { py: 1.5, fontWeight: 500 }
+    }
+  };
+
+  if (loading) return <Box sx={{ display: 'flex', justifyContent: 'center', p: 10 }}><CircularProgress /></Box>;
 
   return (
     <Box sx={{ width: '100%', maxWidth: '1000px', mx: 'auto', p: { xs: 2, md: 4 } }}>
       
-      {/* HEADER: Title + Edit Button */}
+      {/* HEADER */}
       <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 4 }}>
-        <Typography variant="h4" sx={{ fontWeight: 700, color: 'text.primary', letterSpacing: '-0.5px' }}>
-          My profile
-        </Typography>
-
+        <Box>
+            <Typography variant="h4" fontWeight={700} sx={{ letterSpacing: '-0.5px' }}>Admin Profile</Typography>
+            <Typography variant="body2" color="text.secondary">Manage your administrative details</Typography>
+        </Box>
         {!isEditing && (
           <Button 
-            variant="contained" 
-            startIcon={<EditRoundedIcon />}
-            onClick={() => setIsEditing(true)}
-            sx={{ 
-              textTransform: 'none', 
-              fontWeight: 600, 
-              borderRadius: '8px',
-              bgcolor: theme.palette.primary.main,
-              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-              '&:hover': { bgcolor: theme.palette.primary.dark }
-            }}
+            variant="contained" startIcon={<EditRoundedIcon />} onClick={() => setIsEditing(true)}
+            sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 600, boxShadow: 'none' }}
           >
             Edit Profile
           </Button>
@@ -131,127 +162,92 @@ export default function AdminProfile() {
       </Stack>
 
       {/* MAIN CARD */}
-      <Paper 
-        elevation={0} 
-        sx={{ 
-          borderRadius: '16px', 
-          border: '1px solid', 
-          borderColor: 'divider',
-          overflow: 'hidden',
-          bgcolor: 'background.paper'
-        }}
-      >
+      <Paper elevation={0} sx={{ borderRadius: '24px', border: '1px solid', borderColor: 'divider', overflow: 'hidden' }}>
         <Box sx={{ p: { xs: 3, md: 5 } }}>
-          
-          {/* Inner Header */}
-          <Box sx={{ mb: 5 }}>
-            <Typography variant="h6" sx={{ fontWeight: 700, color: 'text.primary' }}>
-              Personal info
-            </Typography>
-            <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
-              Customize how your profile information will appear to the networks.
-            </Typography>
-          </Box>
-
           <Grid container spacing={5}>
             
-            {/* LEFT COLUMN: Avatar (Stacks on top on mobile xs=12) */}
-            <Grid item xs={12} md={3} sx={{ display: 'flex', flexDirection: 'column', alignItems: { xs: 'center', md: 'flex-start' } }}>
+            {/* AVATAR SECTION */}
+            <Grid item xs={12} md={3} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <Box sx={{ position: 'relative' }}>
                 <Avatar 
-                  sx={{ 
-                    width: 140, 
-                    height: 140, 
-                    fontSize: '3.5rem', 
-                    bgcolor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.1)' : '#e0e0e0',
-                    color: theme.palette.text.secondary,
-                  }}
-                  src={user.avatar} 
+                  src={formData.profileImage} 
+                  sx={{ width: 140, height: 140, fontSize: '3rem', bgcolor: 'secondary.light', color: 'secondary.main' }}
                 >
-                  {!user.avatar && formData.name.charAt(0)}
+                  {formData.name.charAt(0)}
                 </Avatar>
                 
-                {/* Camera Icon Overlay */}
+                <input 
+                    type="file" 
+                    hidden 
+                    accept="image/*" 
+                    ref={fileInputRef} 
+                    onChange={handleFileChange} 
+                />
+
                 <IconButton 
                   disabled={!isEditing}
+                  onClick={handleImageClick}
                   sx={{
-                    position: 'absolute',
-                    bottom: 5,
-                    right: 5,
-                    bgcolor: 'background.paper',
-                    border: '1px solid',
-                    borderColor: 'divider',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                    width: 36,
-                    height: 36,
-                    '&:hover': { bgcolor: 'background.paper' },
-                    opacity: isEditing ? 1 : 0,
-                    transition: 'opacity 0.2s'
+                    position: 'absolute', bottom: 5, right: 5, bgcolor: 'background.paper', 
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)', opacity: isEditing ? 1 : 0, transition: '0.2s',
+                    '&:hover': { bgcolor: 'grey.100' }
                   }}
                 >
-                  <CameraAltRoundedIcon sx={{ fontSize: 18, color: 'text.primary' }} />
+                  <CameraAltRoundedIcon fontSize="small" />
                 </IconButton>
               </Box>
             </Grid>
 
-            {/* RIGHT COLUMN: Form Inputs (Stacks below on mobile xs=12) */}
+            {/* FORM SECTION */}
             <Grid item xs={12} md={9}>
               <Grid container spacing={3}>
                 
-                {/* Full Name */}
-                <Grid item xs={12} sm={6}>
-                  <FieldLabel label="Name" />
-                  <TextField 
-                    fullWidth 
-                    name="name" 
-                    value={formData.name} 
-                    onChange={handleChange} 
-                    disabled={!isEditing} 
-                    sx={inputStyle}
-                    placeholder="Enter full name"
-                  />
-                </Grid>
-
-                {/* Role */}
-                <Grid item xs={12} sm={6}>
-                  <FieldLabel label="Role / Position" />
-                  <TextField 
-                    fullWidth 
-                    name="position" 
-                    value={formData.position} 
-                    onChange={handleChange} 
-                    disabled={!isEditing} 
-                    sx={inputStyle}
-                    placeholder="e.g. Senior Administrator"
-                  />
-                </Grid>
-
-                {/* Department */}
-                <Grid item xs={12} sm={6}>
-                  <FieldLabel label="Department" />
-                  <TextField 
-                    fullWidth 
-                    name="department" 
-                    value={formData.department} 
-                    onChange={handleChange} 
-                    disabled={!isEditing} 
-                    sx={inputStyle}
-                    placeholder="e.g. IT Operations"
-                  />
-                </Grid>
-
-                {/* Email (Always Disabled/Read-Only) */}
+                {/* Personal Info */}
                 <Grid item xs={12}>
-                  <FieldLabel label="Email" />
-                  <TextField 
-                    fullWidth 
-                    value={formData.email} 
-                    disabled 
-                    sx={inputStyle}
-                    InputProps={{
-                      startAdornment: <EmailRoundedIcon sx={{ mr: 1.5, color: 'text.disabled', fontSize: 20 }} />
-                    }}
-                  />
+                    <Typography variant="subtitle2" color="primary" fontWeight={700} mb={2}>BASIC INFO</Typography>
+                    <Grid container spacing={3}>
+                        <Grid item xs={12} sm={6}>
+                            <FieldLabel label="Full Name" />
+                            <TextField fullWidth name="name" value={formData.name} onChange={handleChange} disabled={!isEditing} sx={inputStyle} />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <FieldLabel label="Email" />
+                            <TextField fullWidth value={formData.email} disabled sx={inputStyle} InputProps={{ startAdornment: <EmailRoundedIcon sx={{ mr: 1, color: 'text.disabled', fontSize: 20 }} /> }} />
+                        </Grid>
+                    </Grid>
+                </Grid>
+
+                {/* Admin Details */}
+                <Grid item xs={12} sx={{ mt: 1 }}>
+                    <Typography variant="subtitle2" color="primary" fontWeight={700} mb={2}>ADMINISTRATIVE DETAILS</Typography>
+                    <Grid container spacing={3}>
+                        <Grid item xs={12} sm={6}>
+                            <FieldLabel label="Designation / Position" />
+                            <TextField 
+                                fullWidth 
+                                name="position" 
+                                placeholder="e.g. Dean, HOD, Faculty Coordinator"
+                                value={formData.position} 
+                                onChange={handleChange} 
+                                disabled={!isEditing} 
+                                sx={inputStyle} 
+                                InputProps={{ startAdornment: <AdminPanelSettingsRoundedIcon sx={{ mr: 1, color: 'text.disabled', fontSize: 20 }} /> }} 
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <FieldLabel label="Department" />
+                            <TextField 
+                                fullWidth 
+                                name="department" 
+                                placeholder="e.g. Computer Science"
+                                value={formData.department} 
+                                onChange={handleChange} 
+                                disabled={!isEditing} 
+                                sx={inputStyle}
+                                InputProps={{ startAdornment: <BusinessRoundedIcon sx={{ mr: 1, color: 'text.disabled', fontSize: 20 }} /> }} 
+                            />
+                        </Grid>
+                    </Grid>
                 </Grid>
 
               </Grid>
@@ -259,55 +255,20 @@ export default function AdminProfile() {
           </Grid>
         </Box>
 
-        {/* Footer Actions (Only visible when editing) */}
+        {/* ACTIONS */}
         {isEditing && (
-          <Box 
-            sx={{ 
-              p: 2, 
-              display: 'flex', 
-              justifyContent: 'flex-end', 
-              gap: 2,
-              borderTop: '1px solid',
-              borderColor: 'divider',
-              bgcolor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.02)' : '#F9FAFB'
-            }}
-          >
-            <Button 
-              variant="outlined" 
-              onClick={() => setIsEditing(false)}
-              disabled={isSaving}
-              sx={{ 
-                color: 'text.primary', 
-                borderColor: 'divider', 
-                textTransform: 'none', 
-                fontWeight: 600,
-                borderRadius: '8px',
-                '&:hover': { borderColor: 'text.primary', bgcolor: 'transparent' }
-              }}
-            >
-              Cancel
-            </Button>
-            
-            <Button 
-              variant="contained" 
-              onClick={handleSave}
-              disabled={isSaving}
-              startIcon={isSaving ? <CircularProgress size={16} color="inherit" /> : null}
-              sx={{ 
-                bgcolor: theme.palette.primary.main, 
-                textTransform: 'none', 
-                fontWeight: 600,
-                borderRadius: '8px',
-                px: 3,
-                boxShadow: 'none',
-                '&:hover': { bgcolor: theme.palette.primary.dark, boxShadow: 'none' }
-              }}
-            >
-              {isSaving ? "Saving..." : "Save Changes"}
+          <Box sx={{ p: 3, display: 'flex', justifyContent: 'flex-end', gap: 2, borderTop: '1px solid', borderColor: 'divider', bgcolor: 'background.default' }}>
+            <Button variant="outlined" onClick={() => setIsEditing(false)} disabled={saving} sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 600 }}>Cancel</Button>
+            <Button variant="contained" onClick={handleSave} disabled={saving} sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 600, px: 4 }}>
+              {saving ? "Saving..." : "Save Changes"}
             </Button>
           </Box>
         )}
       </Paper>
+
+      <Snackbar open={notification.open} autoHideDuration={4000} onClose={() => setNotification({ ...notification, open: false })} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
+        <Alert severity={notification.severity} variant="filled" sx={{ width: '100%', borderRadius: '10px' }}>{notification.message}</Alert>
+      </Snackbar>
     </Box>
   );
 }

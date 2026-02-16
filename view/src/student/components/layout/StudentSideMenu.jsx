@@ -37,13 +37,13 @@ export default function StudentSideMenu({ activeTab, setActiveTab }) {
       }}
     >
       <Box sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 1.5 }}>
-        <Box sx={{ 
+        {/* <Box sx={{ 
           width: 32, height: 32, borderRadius: '8px',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)'
         }}>
           <EventAvailableRoundedIcon sx={{ color: '#fff', fontSize: 20 }} />
-        </Box>
+        </Box> */}
         <Typography variant="h6" sx={{ fontWeight: 700, fontSize: '1.1rem' }}>
           Event Flow
         </Typography>

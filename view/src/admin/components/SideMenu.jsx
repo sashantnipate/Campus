@@ -6,10 +6,7 @@ import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import SelectContent from './SelectContent';
 import MenuContent from './MenuContent';
-import CardAlert from './CardAlert';
-import OptionsMenu from './OptionsMenu';
 
 const drawerWidth = 240;
 
@@ -24,8 +21,13 @@ const Drawer = styled(MuiDrawer)({
   },
 });
 
-export default function SideMenu({ activeTab, setActiveTab }) {
-  const user = JSON.parse(localStorage.getItem('user')) || { name: 'Admin', email: 'admin@system.com' };
+export default function SideMenu({ activeTab }) {
+  // 1. Get User Data
+  const user = JSON.parse(localStorage.getItem('user')) || {
+    name: 'Admin User',
+    email: 'admin@campus.edu',
+    profileImage: ''
+  };
 
   return (
     <Drawer
@@ -37,16 +39,23 @@ export default function SideMenu({ activeTab, setActiveTab }) {
         },
       }}
     >
+      {/* HEADER */}
       <Box
         sx={{
           display: 'flex',
           mt: 'calc(var(--template-frame-height, 0px) + 4px)',
-          p: 1.5,
+          p: 2,
+          alignItems: 'center',
+          justifyContent: 'center'
         }}
       >
-        Event Flow
+         <Typography variant="h6" component="div" sx={{ fontWeight: 'bold', color: 'primary.main', letterSpacing: 1 }}>
+            Event Flow
+        </Typography>
       </Box>
       <Divider />
+
+      {/* MAIN MENU LINKS */}
       <Box
         sx={{
           overflow: 'auto',
@@ -55,9 +64,10 @@ export default function SideMenu({ activeTab, setActiveTab }) {
           flexDirection: 'column',
         }}
       >
-        <MenuContent activeTab={activeTab} setActiveTab={setActiveTab} />
-        
+        <MenuContent activeTab={activeTab} />
       </Box>
+
+      {/* FOOTER: USER PROFILE ONLY */}
       <Stack
         direction="row"
         sx={{
@@ -71,18 +81,17 @@ export default function SideMenu({ activeTab, setActiveTab }) {
         <Avatar
           sizes="small"
           alt={user.name}
-          src="/static/images/avatar/7.jpg"
+          src={user.profileImage || "/static/images/avatar/7.jpg"}
           sx={{ width: 36, height: 36 }}
         />
-        <Box sx={{ mr: 'auto' }}>
-          <Typography variant="body2" sx={{ fontWeight: 500, lineHeight: '16px' }}>
+        <Box sx={{ mr: 'auto', overflow: 'hidden' }}>
+          <Typography variant="body2" sx={{ fontWeight: 500, lineHeight: '16px', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
             {user.name}
           </Typography>
-          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+          <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
             {user.email}
           </Typography>
         </Box>
-        <OptionsMenu />
       </Stack>
     </Drawer>
   );

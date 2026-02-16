@@ -5,34 +5,57 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Stack from '@mui/material/Stack';
+import { useNavigate } from 'react-router-dom';
+
+// Icons
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
-import AnalyticsRoundedIcon from '@mui/icons-material/AnalyticsRounded';
+import PeopleRoundedIcon from '@mui/icons-material/PeopleRounded';
+import AssignmentIndRoundedIcon from '@mui/icons-material/AssignmentIndRounded';
+import CalendarMonthRoundedIcon from '@mui/icons-material/CalendarMonthRounded';
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
-import CalendarTodayRoundedIcon from '@mui/icons-material/CalendarTodayRounded';
-import EventNoteRoundedIcon from '@mui/icons-material/EventNoteRounded';
-import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
+import InfoRoundedIcon from '@mui/icons-material/InfoRounded';
+import HelpRoundedIcon from '@mui/icons-material/HelpRounded';
+import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded'; // Import Logout Icon
 
 const mainListItems = [
-  { text: 'Home', icon: <HomeRoundedIcon />, id: 'home' },
-  { text: 'Calendar', icon: <CalendarTodayRoundedIcon />, id: 'calendar' },
-  { text: 'Event Management', icon: <EventNoteRoundedIcon />, id: 'events' },
-  { text: 'Analytics', icon: <AnalyticsRoundedIcon />, id: 'analytics' },
+  { text: 'Dashboard', icon: <HomeRoundedIcon />, path: '/admin/home', key: 'home' },
+  { text: 'Calendar', icon: <CalendarMonthRoundedIcon />, path: '/admin/calendar', key: 'calendar' },
+  { text: 'Students Data', icon: <PeopleRoundedIcon />, path: '/admin/data', key: 'data' },
+  { text: 'My Profile', icon: <AssignmentIndRoundedIcon />, path: '/admin/profile', key: 'profile' },
 ];
 
 const secondaryListItems = [
-  { text: 'Profile', icon: <PersonRoundedIcon />, id: 'profile' },
-  { text: 'Settings', icon: <SettingsRoundedIcon />, id: 'settings' },
+
+  { text: 'Logout', icon: <LogoutRoundedIcon />, path: '#', key: 'logout' }, 
 ];
 
-export default function MenuContent({ activeTab, setActiveTab }) {
+export default function MenuContent({ activeTab }) {
+  const navigate = useNavigate();
+
+  const handleNavigation = (path, key) => {
+    // Check if the clicked item is Logout
+    if (key === 'logout') {
+        // 1. Clear Session
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+        
+        // 2. Redirect to Login
+        window.location.href = '#/login';
+    } else {
+        // Normal Navigation
+        navigate(path);
+    }
+  };
+
   return (
     <Stack sx={{ flexGrow: 1, p: 1, justifyContent: 'space-between' }}>
       <List dense>
-        {mainListItems.map((item) => (
-          <ListItem key={item.id} disablePadding sx={{ display: 'block' }}>
-            <ListItemButton 
-              selected={activeTab === item.id}
-              onClick={() => setActiveTab(item.id)}
+        {mainListItems.map((item, index) => (
+          <ListItem key={index} disablePadding sx={{ display: 'block' }}>
+            <ListItemButton
+              selected={activeTab === item.key}
+              onClick={() => handleNavigation(item.path, item.key)}
+              sx={{borderRadius: 1}}
             >
               <ListItemIcon>{item.icon}</ListItemIcon>
               <ListItemText primary={item.text} />
@@ -40,12 +63,21 @@ export default function MenuContent({ activeTab, setActiveTab }) {
           </ListItem>
         ))}
       </List>
+
       <List dense>
-        {secondaryListItems.map((item) => (
-          <ListItem key={item.id} disablePadding sx={{ display: 'block' }}>
-            <ListItemButton 
-              selected={activeTab === item.id}
-              onClick={() => setActiveTab(item.id)}
+        {secondaryListItems.map((item, index) => (
+          <ListItem key={index} disablePadding sx={{ display: 'block' }}>
+            <ListItemButton
+              selected={activeTab === item.key}
+              onClick={() => handleNavigation(item.path, item.key)}
+              sx={{
+                borderRadius: 1,
+                // Optional: Make logout red to distinguish it
+                color: item.key === 'logout' ? 'error.main' : 'inherit', 
+                '& .MuiListItemIcon-root': {
+                    color: item.key === 'logout' ? 'error.main' : 'inherit'
+                }
+              }}
             >
               <ListItemIcon>{item.icon}</ListItemIcon>
               <ListItemText primary={item.text} />

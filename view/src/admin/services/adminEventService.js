@@ -23,3 +23,4 @@ export const deleteAdminEvent = async (eventId) => {
   const response = await API.delete(`/events/${eventId}`);
   return response.data;
 };
+

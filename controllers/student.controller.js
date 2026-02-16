@@ -1,5 +1,7 @@
 const Event = require('../models/event.model'); 
 const EventProgress = require('../models/eventProgress.model');
+const User = require('../models/user.model');
+
 const getStudentEvents = async (req, res) => {
   try {
     const events = await Event.find().sort({ startDate: 1 });
@@ -97,4 +99,41 @@ const getMyRegistrations = async (req, res) => {
   }
 };
 
-module.exports = { getStudentEvents, getEventDetails, registerForEvent, getMyRegistrations };
+const getAllStudents = async (req, res) => {
+  try {
+    // Fetch only users with role 'Student'
+    const students = await User.find({ role: 'Student' })
+      .select('-password') // Exclude password
+      .sort({ createdAt: -1 });
+    res.status(200).json(students);
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
+const toggleStudentVerification = async (req, res) => {
+  try {
+    const student = await User.findById(req.params.id);
+    if (!student) return res.status(404).json({ message: 'Student not found' });
+
+    // Toggle the boolean value
+    student.isVerified = !student.isVerified;
+    await student.save();
+
+    res.status(200).json({ message: 'Status updated', isVerified: student.isVerified });
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
+const deleteStudent = async (req, res) => {
+  try {
+    const student = await User.findByIdAndDelete(req.params.id);
+    if (!student) return res.status(404).json({ message: 'Student not found' });
+    res.status(200).json({ message: 'Student deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
+module.exports = { getStudentEvents, getEventDetails, registerForEvent, getMyRegistrations, getAllStudents, toggleStudentVerification, deleteStudent };

@@ -10,7 +10,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 // Admin
 import Dashboard from "./admin/Dashboard";
-
+import MainGrid from "./admin/components/MainGrid";
+import EventCalendar from "./admin/components/EventCalendar";
 // Student
 import StudentDashboard from "./student/StudentDashboard";
 import StudentCalendar from "./student/pages/StudentCalendar";
@@ -34,6 +35,8 @@ import EventOverview from "./student/pages/organize/EventOverview";
 import EventParticipants from "./student/pages/organize/EventParticipants";
 import EventRoundConsole from "./student/pages/organize/EventRoundConsole";
 import AdminLogin from "./auth/pages/AdminLogin";
+import AdminProfile from "./admin/components/AdminProfile";
+import StudentsDataGrid from "./admin/components/StudentsDataGrid";
 
 function App(props) {
   return (
@@ -86,9 +89,16 @@ function App(props) {
           </Route>
 
           {/* ADMIN ROUTES */}
-          <Route >
-              <Route path="/admin/*" element={<Dashboard />} />
-          </Route>
+          <Route path="/admin" element={<Dashboard />}>
+            {/* Default to 'home' when visiting /admin */}
+            <Route index element={<Navigate to="home" replace />} />
+            
+            {/* These render INSIDE the <Outlet /> of Dashboard */}
+            <Route path="home" element={<MainGrid />} /> {/* Import MainGrid in App.js */}
+            <Route path="calendar" element={<EventCalendar/>} /> {/* Import EventCalendar in App.js */}
+            <Route path="profile" element={<AdminProfile />} />
+            <Route path="data" element={<StudentsDataGrid />} />
+        </Route>
 
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>

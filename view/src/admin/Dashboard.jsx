@@ -1,11 +1,12 @@
-import * as React from 'react'; // Added to use React state
+import * as React from 'react';
 import { alpha } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
+import { Outlet, useLocation } from 'react-router-dom'; // IMPORT ROUTER HOOKS
+
 import AppNavbar from './components/AppNavbar';
 import Header from './components/Header';
-import MainGrid from './components/MainGrid';
 import SideMenu from './components/SideMenu';
 import AppTheme from '../theme/shared-theme/AppTheme';
 import {
@@ -14,8 +15,6 @@ import {
   datePickersCustomizations,
   treeViewCustomizations,
 } from './theme/customizations';
-import EventCalendar from './components/EventCalendar';
-import AdminProfile from './components/AdminProfile';
 
 const xThemeComponents = {
   ...chartsCustomizations,
@@ -25,15 +24,26 @@ const xThemeComponents = {
 };
 
 export default function Dashboard(props) {
-  // 1. Create the state to track which menu item is clicked
-  const [activeTab, setActiveTab] = React.useState('home');
+  // 1. Get current URL path to determine active tab
+  const location = useLocation();
+  const path = location.pathname;
+
+  // 2. Derive activeTab from URL (so SideMenu highlights correctly)
+  let activeTab = 'home';
+  if (path.includes('/profile')) activeTab = 'profile';
+  else if (path.includes('/data')) activeTab = 'data';
+  else if (path.includes('/calendar')) activeTab = 'calendar';
+
+  // Note: We no longer need setActiveTab because navigation happens via Link in the menu
+  // But we pass a dummy function if SideMenu requires it prop-wise
+  const setActiveTab = () => {}; 
 
   return (
     <AppTheme {...props} themeComponents={xThemeComponents}>
       <CssBaseline enableColorScheme />
       <Box sx={{ display: 'flex' }}>
         
-        {/* 2. Pass the state down to the SideMenu so it can change the tab */}
+        {/* Pass derived activeTab to Sidebar for visual highlighting */}
         <SideMenu activeTab={activeTab} setActiveTab={setActiveTab} />
         
         <AppNavbar />
@@ -60,10 +70,9 @@ export default function Dashboard(props) {
           >
             <Header />
             
-            {/* 3. Conditionally render ONLY the active component */}
-            {activeTab === 'home' && <MainGrid />}
-            {activeTab === 'calendar' && <EventCalendar />}
-            {activeTab === 'profile' && <AdminProfile/>}
+            {/* 3. Render the child route here (MainGrid, Profile, etc.) */}
+            <Outlet />
+            
           </Stack>
         </Box>
       </Box>
