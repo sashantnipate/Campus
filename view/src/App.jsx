@@ -27,7 +27,7 @@ import CertificateConsole from "./student/pages/organize/CertificateConsole"; //
 // --- ORGANIZE IMPORTS ---
 import OrganizeDashboard from "./student/pages/organize/OrganizeDashboard"; 
 import OrganizationLayout from "./student/pages/organize/OrganizationLayout"; 
-import OrganizationManage from "./student/pages/organize/OrganizationManage"; 
+
 import OrgTeam from "./student/pages/organize/OrgTeam";
 import MyEventsList from "./student/pages/organize/MyEventsList"; 
 import EventManagementLayout from "./student/pages/organize/EventManagementLayout";
@@ -67,8 +67,7 @@ function App(props) {
 
               {/* Organization Console */}
               <Route path="organize/org/:orgId" element={<OrganizationLayout />}>
-                <Route index element={<OrganizationManage />} />
-                <Route path="events" element={<MyEventsList />} />
+                <Route index element={<MyEventsList />} />
                 <Route path="team" element={<OrgTeam />} />
               </Route>
 

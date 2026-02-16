@@ -79,11 +79,12 @@ const getOrganizationById = async (req, res) => {
 const getOrganizationMembers = async (req, res) => {
   try {
     const members = await OrganizationMember.find({ organizationId: req.params.orgId })
-      .populate('userId', 'fullName email'); 
+      .populate('userId', 'name email profileImage'); 
     const formatted = members.map(m => ({
       id: m.userId._id,
-      name: m.userId.fullName || 'Unknown',
+      name: m.userId.name || 'Unknown',
       email: m.userId.email,
+      profileImage: m.userId.profileImage || '',
       role: m.role,
       status: 'Active', 
       joinedAt: m.joinedAt

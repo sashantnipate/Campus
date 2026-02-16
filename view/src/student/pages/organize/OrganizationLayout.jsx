@@ -14,7 +14,6 @@ import Alert from '@mui/material/Alert'; // Import Alert for errors
 
 // Icons
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
-import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded';
 import PeopleAltRoundedIcon from '@mui/icons-material/PeopleAltRounded';
 import EventRoundedIcon from '@mui/icons-material/EventRounded';
 
@@ -55,14 +54,13 @@ export default function OrganizationLayout() {
 
   // 2. Handle Tab Selection
   const currentPath = location.pathname.split('/').pop();
-  const tabMap = { events: 1, team: 2 };
+  const tabMap = { team: 1 };
   const currentTab = tabMap[currentPath] || 0;
 
   const handleTabChange = (e, val) => {
     const base = `/student/organize/org/${orgId}`;
     if (val === 0) navigate(base);
-    if (val === 1) navigate(`${base}/events`);
-    if (val === 2) navigate(`${base}/team`);
+    if (val === 1) navigate(`${base}/team`);
   };
 
   // 3. Loading State (The Spinner)
@@ -110,7 +108,6 @@ export default function OrganizationLayout() {
         </Stack>
         
         <Tabs value={currentTab} onChange={handleTabChange}>
-          <Tab icon={<DashboardRoundedIcon sx={{ fontSize: 18 }} />} iconPosition="start" label="Dashboard" />
           <Tab icon={<EventRoundedIcon sx={{ fontSize: 18 }} />} iconPosition="start" label="Events" />
           <Tab icon={<PeopleAltRoundedIcon sx={{ fontSize: 18 }} />} iconPosition="start" label="Team" />
         </Tabs>
