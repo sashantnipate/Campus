@@ -69,17 +69,32 @@ export default function StudentSideMenu({ activeTab, setActiveTab }) {
         py: 2,    // Adds vertical breathing room
         minHeight: '64px' // Standard toolbar height
       }}>
-        <Box
-          component="img"
+       <Box sx={{ display: 'flex', alignItems: 'center', }}>
+        <img
           src={logoo}
           alt="EventFlow Logo"
-          sx={{
-            height: 80,       // Reduced from 100 to 40 for proper scaling
-            width: 'auto',    
-            objectFit: 'contain',
-            display: 'block'
+          style={{
+            height: '130px',     
+            width: '100px',       // 1. You MUST set a fixed width to create the "crop box"
+            objectFit: 'cover',  // 2. This crops the image to fill the 40x40 box
+            objectPosition: 'center', // 3. (Optional) Focuses the crop on the center
+            display: 'block',
+            borderRadius: '8px'  // (Optional) Rounds the corners of your newly cropped image
           }}
         />
+
+        <Typography
+          variant="h6"
+          sx={{
+            fontWeight: 700,
+            fontSize: '1.3rem',
+            color: '#1b129cff',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          Event Flow
+        </Typography>
+      </Box>
         {/* <Typography 
           variant="h6" 
           sx={{ 
