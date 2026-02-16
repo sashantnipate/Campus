@@ -290,9 +290,9 @@ export default function OrganizeDashboard() {
       {/* 2. Join Organization Modal */}
       <Dialog open={joinOrgOpen} onClose={() => setJoinOrgOpen(false)} fullWidth maxWidth="xs">
         <DialogTitle>Join Organization</DialogTitle>
-        <DialogContent>
+        <DialogContent >
           <TextField 
-            autoFocus margin="dense" label="Join Code" fullWidth variant="outlined" 
+            autoFocus margin="dense"  fullWidth variant="outlined" 
             placeholder="e.g. GDS-1234"
             value={joinCode} onChange={(e) => setJoinCode(e.target.value)}
             InputProps={{ startAdornment: <InputAdornment position="start"><VpnKeyRoundedIcon /></InputAdornment> }} 
@@ -300,7 +300,19 @@ export default function OrganizeDashboard() {
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2 }}>
           <Button onClick={() => setJoinOrgOpen(false)}>Cancel</Button>
-          <Button variant="contained" onClick={handleJoinOrg} disabled={!joinCode}>Join</Button>
+          <Button 
+  variant="contained" 
+  onClick={handleJoinOrg} 
+  disabled={!joinCode}
+  sx={{ 
+    color: '#ffffff',
+    '&.Mui-disabled': {
+      color: '#ffffff'        // Optional: makes it look faded instead of gray
+    }
+  }}
+>
+  Join
+</Button>
         </DialogActions>
       </Dialog>
 
