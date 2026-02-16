@@ -237,8 +237,28 @@ export default function CreateEventModal({ open, onClose, initialDate, existingE
               <DateTimePicker disabled={!editMode} value={formData.endDate} onChange={(val) => setFormData(prev => ({ ...prev, endDate: val }))} renderInput={(params) => <TextField {...params} sx={inputStyle} />} />
             </FieldWrapper>
             
-            <FieldWrapper label="Location / Venue">
-              <TextField disabled={!editMode} sx={inputStyle} name="location" value={formData.location} onChange={handleChange} />
+           <FieldWrapper label="Location / Venue">
+              <TextField 
+                disabled={!editMode} 
+                name="location" 
+                value={formData.location} 
+                onChange={handleChange} 
+                multiline
+                minRows={1}
+                maxRows={4} // Box grows up to 4 lines, then scrolls
+                sx={{
+                  ...inputStyle,
+                  '& .MuiOutlinedInput-root': {
+                    ...inputStyle['& .MuiOutlinedInput-root'], // Keeps your colors and border-radius
+                    height: 'auto',       // Forces the outer box to grow with the text
+                    padding: '12px 14px', // Pushes the border away from the text
+                    alignItems: 'flex-start' 
+                  },
+                  '& .MuiInputBase-inputMultiline': {
+                    overflowY: 'auto !important', // Ensures the scrollbar stays inside the box
+                  }
+                }} 
+              />
             </FieldWrapper>
             
             <FieldWrapper label="Max Seats (0 for unlimited)">
@@ -247,7 +267,27 @@ export default function CreateEventModal({ open, onClose, initialDate, existingE
             
             {/* Forced rows={8} to make the description box large and clean */}
             <FieldWrapper label="Description" fullWidth>
-              <TextField disabled={!editMode} sx={inputStyle} multiline rows={8} name="description" value={formData.description} onChange={handleChange} />
+              <TextField 
+                disabled={!editMode} 
+                name="description" 
+                value={formData.description} 
+                onChange={handleChange} 
+                multiline 
+                minRows={4} // Starts at 4 lines tall
+                maxRows={8} // Box grows up to 8 lines, then scrolls
+                sx={{
+                  ...inputStyle,
+                  '& .MuiOutlinedInput-root': {
+                    ...inputStyle['& .MuiOutlinedInput-root'], 
+                    height: 'auto',
+                    padding: '12px 14px',
+                    alignItems: 'flex-start'
+                  },
+                  '& .MuiInputBase-inputMultiline': {
+                    overflowY: 'auto !important',
+                  }
+                }} 
+              />
             </FieldWrapper>
           </Box>
 
