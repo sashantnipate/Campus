@@ -253,7 +253,16 @@ export default function OrganizeDashboard() {
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2 }}>
           <Button onClick={() => setCreateOrgOpen(false)}>Cancel</Button>
-          <Button variant="contained" onClick={handleCreateOrg} disabled={!orgName}>Create</Button>
+          <Button 
+              variant="contained" 
+              onClick={handleCreateOrg} 
+              disabled={!orgName}
+              sx={{ 
+                color: '#FFFFFF !important', // Adding !important ensures it overrides theme defaults
+                fontWeight: 'bold' 
+              }}
+           >Create
+          </Button>
         </DialogActions>
       </Dialog>
 
