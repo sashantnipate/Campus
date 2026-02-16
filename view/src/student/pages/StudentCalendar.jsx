@@ -31,6 +31,8 @@ import AccessTimeRoundedIcon from '@mui/icons-material/AccessTimeRounded';
 import LocationOnRoundedIcon from '@mui/icons-material/LocationOnRounded';
 
 import { fetchStudentEvents } from '../services/studentEventService';
+import { useNavigate } from 'react-router-dom';
+// import Maps from './Maps';
 
 export default function StudentCalendar() {
   const theme = useTheme();
@@ -41,7 +43,7 @@ export default function StudentCalendar() {
   
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [selectedEvent, setSelectedEvent] = React.useState(null); 
-  
+  const navigate = useNavigate();
   const [calendarEvents, setCalendarEvents] = React.useState([]); 
 
   // Bright color palette (no yellow) – each event gets one of these
@@ -343,7 +345,10 @@ export default function StudentCalendar() {
           <Button 
             variant="contained" 
             disableElevation
-            onClick={() => alert("Redirecting to Discover Page...")}
+            onClick={() => {
+              closeModal();
+              navigate(`/student/event/${selectedEvent._id}`);
+            }}
             sx={{ 
               textTransform: 'none', 
               fontWeight: 700, 
