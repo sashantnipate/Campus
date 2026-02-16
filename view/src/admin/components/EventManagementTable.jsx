@@ -94,7 +94,9 @@ export default function EventManagementTable() {
               sx={{ 
                 color: getColor(params.value),
                 fontWeight: 'bold',
-                fontSize: '0.875rem'
+                fontSize: '0.875rem',
+                px:1,py:0.3,
+                alignItems: 'center',
                }}
             >
               <MenuItem value="Draft">Draft</MenuItem>
@@ -116,15 +118,17 @@ export default function EventManagementTable() {
   return (
     <Card variant="outlined">
       <CardHeader
+        sx={{ pb:0, marginBottom:2}}
         title="Event Management"
         subheader="Real-time campus event control"
         action={
           <FormControl size="small" sx={{ width: 150 }}>
-            <InputLabel>Category</InputLabel>
+            <InputLabel >Category</InputLabel>
             <Select
               value={filterCategory}
               label="Category"
               onChange={(e) => setFilterCategory(e.target.value)}
+              sx={{width: 130, margin: 2}}
             >
               <MenuItem value="All">All Categories</MenuItem>
               <MenuItem value="Hackathon">Hackathon</MenuItem>
