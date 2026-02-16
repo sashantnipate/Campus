@@ -27,6 +27,7 @@ import EventAvailableRoundedIcon from '@mui/icons-material/EventAvailableRounded
 // Import CircularProgress for the loader
 import CircularProgress from '@mui/material/CircularProgress';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import logoo from '../../assets/logoo.png'
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -246,34 +247,31 @@ export default function SignUp(props) {
             spacing={2}
             sx={{ alignItems: 'center', width: '100%' }}
           >
-            <Box
-              sx={{
-                width: 40,
-                height: 40,
-                flexShrink: 0,
-                borderRadius: '12px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
-                boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)',
-              }}
-            >
-              <EventAvailableRoundedIcon sx={{ color: '#fff', fontSize: 26 }} />
-            </Box>
-
-            <Typography
-              component="h1"
-              variant="h6"
-              sx={{
-                fontWeight: 700,
-                fontSize: 'clamp(1rem, 1.5vw, 2.15rem)',
-                color: 'text.primary',
-                lineHeight: 1
-              }}
-            >
-              Event Flow
-            </Typography>
+           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0}}>
+      <img
+        src={logoo}
+        alt="EventFlow Logo"
+        style={{
+          height: '130px',     // Adjusted for better sidebar proportions  
+          width: '80px',      
+          objectFit: 'cover', 
+          objectPosition: 'center', 
+          display: 'block',
+          borderRadius: '8px' 
+        }}
+      />
+      <Typography
+        variant="h6"
+        sx={{
+          fontWeight: 700,
+          fontSize: '1.3rem',
+          color: '#1b129cff',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        Event Flow
+      </Typography>
+    </Box>
           </Stack>
 
           <Typography

@@ -2,6 +2,7 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import logoo from '../../assets/logoo.png';
 
 // Icons
 import EventAvailableRoundedIcon from '@mui/icons-material/EventAvailableRounded';
@@ -10,35 +11,31 @@ import EmojiEventsRoundedIcon from '@mui/icons-material/EmojiEventsRounded';
 import DashboardCustomizeRoundedIcon from '@mui/icons-material/DashboardCustomizeRounded';
 
 // --- Custom Event Flow Logo ---
+// Don't forget to ensure 'logoo' is imported at the top of this file!
+// import logoo from '../../../assets/logoo.png';
+
 function EventFlowLogo() {
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-      {/* Icon Graphic */}
-      <Box
-        sx={{
-          width: 40,
-          height: 40,
-          bgcolor: 'primary.main',
-          borderRadius: '12px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)',
-          background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0}}>
+      <img
+        src={logoo}
+        alt="EventFlow Logo"
+        style={{
+          height: '130px',     // Adjusted for better sidebar proportions  
+          width: '80px',      
+          objectFit: 'cover', 
+          objectPosition: 'center', 
+          display: 'block',
+          borderRadius: '8px' 
         }}
-      >
-        <EventAvailableRoundedIcon sx={{ color: '#fff', fontSize: 26 }} />
-      </Box>
-      {/* Text Branding */}
-      <Typography 
-        variant="h5" 
-        sx={{ 
-          fontWeight: 800, 
-          letterSpacing: '-0.5px',
-          background: 'linear-gradient(90deg, #2563eb 0%, #000 100%)', // Adjust #000 to #fff for dark mode if needed
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          display: 'inline-block' 
+      />
+      <Typography
+        variant="h6"
+        sx={{
+          fontWeight: 700,
+          fontSize: '1.3rem',
+          color: '#1b129cff',
+          whiteSpace: 'nowrap',
         }}
       >
         Event Flow
