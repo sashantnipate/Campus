@@ -21,8 +21,8 @@ import StudentEventDetails from "./student/pages/StudentEventDetails";
 import StudentProfile from "./student/pages/StudentProfile";
 
 // --- NEW IMPORTS FOR SIDECAR ARCHITECTURE ---
-import MyCertificates from "./student/pages/MyCertificates"; // The Student Gallery
-import CertificateConsole from "./student/pages/organize/CertificateConsole"; // The Organizer Sidecar
+import MyCertificates from "./student/pages/MyCertificates"; 
+import CertificateConsole from "./student/pages/organize/CertificateConsole"; 
 
 // --- ORGANIZE IMPORTS ---
 import OrganizeDashboard from "./student/pages/organize/OrganizeDashboard"; 
@@ -49,36 +49,26 @@ function App(props) {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/admin-login" element={<AdminLogin/>}/>
+          
+          <Route path="/verify/:code" element={<VerifyCertificate/>} />
 
-          {/* STUDENT ROUTES */}
           <Route element={<ProtectedRoute allowedRoles={["student"]} />}>
             <Route path="/student" element={<StudentDashboard />}>
               <Route index element={<Navigate to="discover" replace />} />
               <Route path="discover" element={<StudentDiscovery />} />
               <Route path="calendar" element={<StudentCalendar />} />
-              
-              {/* --- 1. UNIQUE ROUTE: Student achievements gallery --- */}
-              {/* This prevents navigation conflict with the Organizer Console */}
               <Route path="achievements" element={<MyCertificates />} />
 
-              {/* --- ORGANIZE ROUTES --- */}
-              
-              {/* Main Landing */}
               <Route path="organize" element={<OrganizeDashboard />} />
-
-              {/* Organization Console */}
               <Route path="organize/org/:orgId" element={<OrganizationLayout />}>
                 <Route index element={<MyEventsList />} />
                 <Route path="team" element={<OrgTeam />} />
               </Route>
 
-              {/* Event Console */}
               <Route path="organize/event/:eventId" element={<EventManagementLayout />}>
                 <Route index element={<EventOverview />} />
                 <Route path="participants" element={<EventParticipants />} />
                 <Route path="console" element={<EventRoundConsole />} />
-
-                {/* --- 2. ORGANIZER CONSOLE: Manages manual issuance --- */}
                 <Route path="certificates" element={<CertificateConsole />} />
               </Route>
 
@@ -88,13 +78,9 @@ function App(props) {
             </Route>
           </Route>
 
-          {/* ADMIN ROUTES */}
           <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
             <Route path="/admin" element={<Dashboard />}>
-               {/* Default redirect to 'home' */}
                <Route index element={<Navigate to="home" replace />} />
-               
-               {/* Nested Admin Routes */}
                <Route path="home" element={<MainGrid />} /> 
                <Route path="calendar" element={<EventCalendar/>} /> 
                <Route path="profile" element={<AdminProfile />} />
@@ -103,7 +89,6 @@ function App(props) {
           </Route>
 
           <Route path="*" element={<Navigate to="/login" replace />} />
-          <Route path="/verify/:code" element={<VerifyCertificate/>} />
         </Routes>
       </Router>
     </AppTheme>

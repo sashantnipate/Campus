@@ -13,7 +13,6 @@ import InputAdornment from '@mui/material/InputAdornment';
 import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
 import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
@@ -33,8 +32,8 @@ import CalendarMonthRoundedIcon from '@mui/icons-material/CalendarMonthRounded';
 import LocationOnRoundedIcon from '@mui/icons-material/LocationOnRounded';
 import FilterAltRoundedIcon from '@mui/icons-material/FilterAltRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
-import AccessTimeRoundedIcon from '@mui/icons-material/AccessTimeRounded';
 import EmojiEventsRoundedIcon from '@mui/icons-material/EmojiEventsRounded';
+import AccessTimeFilledRoundedIcon from '@mui/icons-material/AccessTimeFilledRounded'; // New Icon
 
 // Services
 import { fetchStudentEvents, registerForEvent } from '../services/studentEventService';
@@ -59,9 +58,11 @@ export default function StudentDiscovery() {
   const [loading, setLoading] = React.useState(true);
   const [registering, setRegistering] = React.useState(false);
   
+  // Filters
   const [searchTerm, setSearchTerm] = React.useState('');
   const [categoryFilter, setCategoryFilter] = React.useState('All');
-  
+  const [timeFilter, setTimeFilter] = React.useState('Upcoming'); // Default to Upcoming to hide started events
+
   const [selectedEvent, setSelectedEvent] = React.useState(null);
   const [snackbar, setSnackbar] = React.useState({ open: false, message: '', severity: 'info' });
 
@@ -84,13 +85,28 @@ export default function StudentDiscovery() {
 
   // Filter Logic
   const filteredEvents = React.useMemo(() => {
+    const now = new Date();
+
     return events.filter(ev => {
+      // 1. Search Filter
       const matchesSearch = ev.title?.toLowerCase().includes(searchTerm.toLowerCase()) || 
                             ev.description?.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      // 2. Category Filter
       const matchesCategory = categoryFilter === 'All' || ((ev.category || '').toString().toLowerCase() === categoryFilter.toString().toLowerCase());
-      return matchesSearch && matchesCategory;
+
+      // 3. Time Filter (New Logic)
+      const eventDate = new Date(ev.startDate);
+      let matchesTime = true;
+      if (timeFilter === 'Upcoming') {
+        // Only show events that have NOT started yet
+        matchesTime = eventDate > now;
+      }
+      // If timeFilter is 'All', matchesTime remains true
+
+      return matchesSearch && matchesCategory && matchesTime;
     });
-  }, [events, searchTerm, categoryFilter]);
+  }, [events, searchTerm, categoryFilter, timeFilter]);
 
   const categories = ['All', ...new Set(events.map(ev => ev.category || 'General'))];
 
@@ -103,7 +119,6 @@ export default function StudentDiscovery() {
     if (!selectedEvent) return;
     
     const userString = localStorage.getItem('user'); 
-
     const userData = userString ? JSON.parse(userString) : null;
     const userId = userData?.id; 
 
@@ -143,7 +158,12 @@ export default function StudentDiscovery() {
 
   // Helper to check if current user is registered
   const isRegistered = (ev) => {
-    const userId = localStorage.getItem('userId');
+    const userId = localStorage.getItem('userId'); // Assuming userId is stored separately or parsed from user obj
+    // Fallback if strictly stored in user object
+    if (!userId) {
+       const userStr = localStorage.getItem('user');
+       if(userStr) return ev.registeredStudents?.includes(JSON.parse(userStr).id);
+    }
     return ev.registeredStudents?.includes(userId);
   };
 
@@ -162,18 +182,35 @@ export default function StudentDiscovery() {
         </Box>
 
         <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ width: { xs: '100%', md: 'auto' } }}>
+          {/* Search Input */}
           <TextField
             placeholder="Search events..."
             variant="outlined" size="small"
             value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
             InputProps={{ startAdornment: <InputAdornment position="start"><SearchRoundedIcon fontSize="small" /></InputAdornment> }}
-            sx={{ width: { xs: '100%', md: '260px' }, bgcolor: 'background.paper', '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
+            sx={{ width: { xs: '100%', md: '220px' }, bgcolor: 'background.paper', '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
           />
+
+          {/* Time Filter (Upcoming vs All) */}
+          <TextField
+            select
+            value={timeFilter}
+            onChange={(e) => setTimeFilter(e.target.value)}
+            size="small"
+            variant="outlined"
+            InputProps={{ startAdornment: <InputAdornment position="start"><AccessTimeFilledRoundedIcon fontSize="small" /></InputAdornment> }}
+            sx={{ width: { xs: '100%', md: '160px' }, bgcolor: 'background.paper', '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
+          >
+            <MenuItem value="Upcoming">Upcoming</MenuItem>
+            <MenuItem value="All">All Events</MenuItem>
+          </TextField>
+
+          {/* Category Filter */}
           <TextField
             select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}
             size="small" variant="outlined"
             InputProps={{ startAdornment: <InputAdornment position="start"><FilterAltRoundedIcon fontSize="small" /></InputAdornment> }}
-            sx={{ width: { xs: '100%', md: '180px' }, bgcolor: 'background.paper', '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
+            sx={{ width: { xs: '100%', md: '160px' }, bgcolor: 'background.paper', '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
           >
             {categories.map((cat) => <MenuItem key={cat} value={cat}>{cat}</MenuItem>)}
           </TextField>
@@ -182,69 +219,79 @@ export default function StudentDiscovery() {
 
       {/* Events Grid */}
       <Grid container spacing={3}>
-        {filteredEvents.map((ev, index) => {
-          const colors = getColorForIndex(index);
-          const headerBg = isDark ? colors.dark : colors.light;
-          const registered = isRegistered(ev);
+        {filteredEvents.length === 0 ? (
+           <Grid item xs={12}>
+              <Box sx={{ textAlign: 'center', py: 10, opacity: 0.6 }}>
+                 <EmojiEventsRoundedIcon sx={{ fontSize: 60, mb: 2, color: 'text.secondary' }} />
+                 <Typography variant="h6" color="text.secondary">No events found matching your criteria.</Typography>
+                 {timeFilter === 'Upcoming' && <Typography variant="body2" color="text.secondary">Try switching the time filter to "All Events".</Typography>}
+              </Box>
+           </Grid>
+        ) : (
+          filteredEvents.map((ev, index) => {
+            const colors = getColorForIndex(index);
+            const headerBg = isDark ? colors.dark : colors.light;
+            const registered = isRegistered(ev);
 
-          return (
-            <Grid item xs={12} sm={6} lg={4} key={ev._id || index}>
-              <Card 
-                elevation={0} 
-                onClick={() => setSelectedEvent(ev)}
-                sx={{ 
-                  height: '100%', minHeight: 420, display: 'flex', flexDirection: 'column',
-                  borderRadius: '16px', border: '1px solid', borderColor: isDark ? alpha(theme.palette.common.white, 0.1) : alpha(theme.palette.common.black, 0.08),
-                  overflow: 'hidden', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', cursor: 'pointer',
-                  '&:hover': { transform: 'translateY(-8px)', boxShadow: isDark ? '0 12px 24px rgba(0,0,0,0.6)' : '0 12px 24px rgba(0,0,0,0.12)', borderColor: headerBg }
-                }}
-              >
-                {/* Card Header */}
-                <Box sx={{ height: 140, position: 'relative', bgcolor: headerBg, background: `linear-gradient(135deg, ${headerBg} 0%, ${isDark ? alpha(colors.dark, 0.9) : alpha(colors.light, 0.9)} 100%)`, overflow: 'hidden' }}>
-                  {ev.posterUrl ? (
-                    <CardMedia component="img" height="140" image={ev.posterUrl} alt={ev.title} sx={{ objectFit: 'cover', opacity: 0.85 }} />
-                  ) : (
-                    <Stack alignItems="center" justifyContent="center" sx={{ height: '100%', position: 'relative', zIndex: 1 }}>
-                      <Typography sx={{ color: '#fff', fontSize: '0.85rem', fontWeight: 600, letterSpacing: 1.2, textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
-                        {ev.category?.toUpperCase() || 'EVENT'}
-                      </Typography>
-                    </Stack>
-                  )}
-                  <Chip label={ev.category || 'Event'} size="small" sx={{ position: 'absolute', top: 10, right: 10, bgcolor: isDark ? alpha(theme.palette.common.black, 0.7) : 'rgba(255,255,255,0.95)', fontWeight: 500, color: headerBg, fontSize: '0.75rem', backdropFilter: 'blur(8px)', zIndex: 2 }} />
-                </Box>
+            return (
+              <Grid item xs={12} sm={6} lg={4} key={ev._id || index}>
+                <Card 
+                  elevation={0} 
+                  onClick={() => setSelectedEvent(ev)}
+                  sx={{ 
+                    height: '100%', minHeight: 420, display: 'flex', flexDirection: 'column',
+                    borderRadius: '16px', border: '1px solid', borderColor: isDark ? alpha(theme.palette.common.white, 0.1) : alpha(theme.palette.common.black, 0.08),
+                    overflow: 'hidden', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', cursor: 'pointer',
+                    '&:hover': { transform: 'translateY(-8px)', boxShadow: isDark ? '0 12px 24px rgba(0,0,0,0.6)' : '0 12px 24px rgba(0,0,0,0.12)', borderColor: headerBg }
+                  }}
+                >
+                  {/* Card Header */}
+                  <Box sx={{ height: 140, position: 'relative', bgcolor: headerBg, background: `linear-gradient(135deg, ${headerBg} 0%, ${isDark ? alpha(colors.dark, 0.9) : alpha(colors.light, 0.9)} 100%)`, overflow: 'hidden' }}>
+                    {ev.posterUrl ? (
+                      <CardMedia component="img" height="140" image={ev.posterUrl} alt={ev.title} sx={{ objectFit: 'cover', opacity: 0.85 }} />
+                    ) : (
+                      <Stack alignItems="center" justifyContent="center" sx={{ height: '100%', position: 'relative', zIndex: 1 }}>
+                        <Typography sx={{ color: '#fff', fontSize: '0.85rem', fontWeight: 600, letterSpacing: 1.2, textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
+                          {ev.category?.toUpperCase() || 'EVENT'}
+                        </Typography>
+                      </Stack>
+                    )}
+                    <Chip label={ev.category || 'Event'} size="small" sx={{ position: 'absolute', top: 10, right: 10, bgcolor: isDark ? alpha(theme.palette.common.black, 0.7) : 'rgba(255,255,255,0.95)', fontWeight: 500, color: headerBg, fontSize: '0.75rem', backdropFilter: 'blur(8px)', zIndex: 2 }} />
+                  </Box>
 
-                {/* Card Content */}
-                <CardContent sx={{ flexGrow: 1, p: 2.5, display: 'flex', flexDirection: 'column', bgcolor: isDark ? alpha(colors.light, 0.08) : colors.accent, borderLeft: `4px solid ${headerBg}`, position: 'relative', overflow: 'hidden' }}>
-                  <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, lineHeight: 1.3, color: isDark ? '#fff' : '#000', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', zIndex: 1 }}>
-                    {ev.title}
-                  </Typography>
-                  
-                  <Stack spacing={1.5} sx={{ mt: 'auto', position: 'relative', zIndex: 1 }}>
-                    <Stack direction="row" spacing={1.5} alignItems="flex-start" sx={{ color: 'text.secondary' }}>
-                      <CalendarMonthRoundedIcon sx={{ fontSize: 18, color: headerBg, mt: 0.25 }} />
-                      <Typography variant="body2" sx={{ fontWeight: 400, lineHeight: 1.4 }}>
-                        {ev.startDate ? new Date(ev.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Date TBD'}
-                      </Typography>
+                  {/* Card Content */}
+                  <CardContent sx={{ flexGrow: 1, p: 2.5, display: 'flex', flexDirection: 'column', bgcolor: isDark ? alpha(colors.light, 0.08) : colors.accent, borderLeft: `4px solid ${headerBg}`, position: 'relative', overflow: 'hidden' }}>
+                    <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, lineHeight: 1.3, color: isDark ? '#fff' : '#000', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', zIndex: 1 }}>
+                      {ev.title}
+                    </Typography>
+                    
+                    <Stack spacing={1.5} sx={{ mt: 'auto', position: 'relative', zIndex: 1 }}>
+                      <Stack direction="row" spacing={1.5} alignItems="flex-start" sx={{ color: 'text.secondary' }}>
+                        <CalendarMonthRoundedIcon sx={{ fontSize: 18, color: headerBg, mt: 0.25 }} />
+                        <Typography variant="body2" sx={{ fontWeight: 400, lineHeight: 1.4 }}>
+                          {ev.startDate ? new Date(ev.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Date TBD'}
+                        </Typography>
+                      </Stack>
+                      <Stack direction="row" spacing={1.5} alignItems="flex-start" sx={{ color: 'text.secondary' }}>
+                        <LocationOnRoundedIcon sx={{ fontSize: 18, color: headerBg, mt: 0.25 }} />
+                        <Typography variant="body2" sx={{ fontWeight: 400, lineHeight: 1.4, display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                          {ev.location || 'Campus'}
+                        </Typography>
+                      </Stack>
                     </Stack>
-                    <Stack direction="row" spacing={1.5} alignItems="flex-start" sx={{ color: 'text.secondary' }}>
-                      <LocationOnRoundedIcon sx={{ fontSize: 18, color: headerBg, mt: 0.25 }} />
-                      <Typography variant="body2" sx={{ fontWeight: 400, lineHeight: 1.4, display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                        {ev.location || 'Campus'}
-                      </Typography>
-                    </Stack>
-                  </Stack>
-                </CardContent>
+                  </CardContent>
 
-                {/* Card Actions */}
-                <CardActions sx={{ p: 2.5, pt: 1 }}>
-                  <Button fullWidth variant={registered ? "outlined" : "contained"} onClick={(e) => { e.stopPropagation(); setSelectedEvent(ev); }} sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 600, py: 1.2, bgcolor: registered ? 'transparent' : headerBg, color: registered ? headerBg : '#fff', borderColor: headerBg, '&:hover': { bgcolor: registered ? alpha(headerBg, 0.1) : headerBg } }}>
-                    {registered ? "View Status" : "View Details"}
-                  </Button>
-                </CardActions>
-              </Card>
-            </Grid>
-          );
-        })}
+                  {/* Card Actions */}
+                  <CardActions sx={{ p: 2.5, pt: 1 }}>
+                    <Button fullWidth variant={registered ? "outlined" : "contained"} onClick={(e) => { e.stopPropagation(); setSelectedEvent(ev); }} sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 600, py: 1.2, bgcolor: registered ? 'transparent' : headerBg, color: registered ? headerBg : '#fff', borderColor: headerBg, '&:hover': { bgcolor: registered ? alpha(headerBg, 0.1) : headerBg } }}>
+                      {registered ? "View Status" : "View Details"}
+                    </Button>
+                  </CardActions>
+                </Card>
+              </Grid>
+            );
+          })
+        )}
       </Grid>
 
       {/* --- EVENT DETAILS DIALOG --- */}
@@ -339,7 +386,7 @@ export default function StudentDiscovery() {
             <DialogActions sx={{ p: 3, pt: 1 }}>
               <Button 
                 fullWidth 
-                size="large"
+                size="large" 
                 variant="contained" 
                 onClick={handleRegister}
                 disabled={isRegistered(selectedEvent) || registering || (selectedEvent.maxSeats > 0 && (selectedEvent.registeredStudents?.length || 0) >= selectedEvent.maxSeats)}
@@ -352,10 +399,10 @@ export default function StudentDiscovery() {
                 }}
               >
                 {registering ? <CircularProgress
-                                       size={20}
-                                       sx={{
-                                         color: 'white',
-                                       }}
+                                        size={20}
+                                        sx={{
+                                          color: 'white',
+                                        }}
                   /> : 
                  isRegistered(selectedEvent) ? "✓ Already Registered" : 
                  (selectedEvent.maxSeats > 0 && (selectedEvent.registeredStudents?.length || 0) >= selectedEvent.maxSeats) ? "Sold Out" : 
@@ -367,30 +414,27 @@ export default function StudentDiscovery() {
       </Dialog>
 
       <Snackbar 
-  open={snackbar.open} 
-  autoHideDuration={4000} 
-  onClose={() => setSnackbar({ ...snackbar, open: false })}
->
-  <Alert 
-    severity={snackbar.severity} 
-    variant="filled" // Using "filled" makes the background color much more prominent
-    sx={{ 
-      borderRadius: '12px', 
-      fontWeight: 600,
-      color: 'white', // Ensures text is readable
-      // Custom background colors based on severity
-      backgroundColor: 
-        snackbar.severity === 'success' ? '#38cb82' : 
-        snackbar.severity === 'error' ? '#FF7F7F' : 
-        undefined, // falls back to MUI default for 'info' or 'warning'
-      '& .MuiAlert-icon': {
-        color: 'white',
-      }
-    }}
-  >
-    {snackbar.message}
-  </Alert>
-</Snackbar>
+        open={snackbar.open} 
+        autoHideDuration={4000} 
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+      >
+        <Alert 
+          severity={snackbar.severity} 
+          variant="filled" 
+          sx={{ 
+            borderRadius: '12px', 
+            fontWeight: 600,
+            color: 'white', 
+            backgroundColor: 
+              snackbar.severity === 'success' ? '#38cb82' : 
+              snackbar.severity === 'error' ? '#FF7F7F' : 
+              undefined, 
+            '& .MuiAlert-icon': { color: 'white' }
+          }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }

@@ -6,18 +6,13 @@ const IssuedCertificate = require('../models/issuedCertificate.model');
 
 // --- 1. CONFIGURATION (Organizer) ---
 
-// Create a mapping (e.g., Round 1 -> Template ID 123)
 exports.createTemplateMapping = async (req, res) => {
   try {
     const { eventId } = req.params;
     const { name, templateId, assignedForRound, tag } = req.body;
 
     const newTemplate = await CertificateTemplate.create({
-      event: eventId,
-      name,
-      templateId,
-      assignedForRound,
-      tag
+      event: eventId, name, templateId, assignedForRound, tag
     });
 
     res.status(201).json(newTemplate);
@@ -26,7 +21,6 @@ exports.createTemplateMapping = async (req, res) => {
   }
 };
 
-// Get all mappings for an event
 exports.getEventTemplates = async (req, res) => {
   try {
     const templates = await CertificateTemplate.find({ event: req.params.eventId });
@@ -36,8 +30,6 @@ exports.getEventTemplates = async (req, res) => {
   }
 };
 
-
-// --- 2. ISSUING LOGIC (Organizer Trigger) ---
 exports.deleteTemplateMapping = async (req, res) => {
   try {
     await CertificateTemplate.findByIdAndDelete(req.params.templateId);
@@ -66,7 +58,6 @@ exports.previewTemplate = async (req, res) => {
             { template: templateId, layers: dummyData },
             { headers: { 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' } }
         );
-        // Return the render URL directly
         res.status(200).json({ url: response.data.render_url || response.data.url });
     } catch (error) {
         console.error("Preview Error:", error.response?.data);
@@ -74,6 +65,8 @@ exports.previewTemplate = async (req, res) => {
     }
 };
 
+
+// --- 2. ISSUING LOGIC (With UPGRADE Fix) ---
 
 exports.issueCertificates = async (req, res) => {
   const { eventId } = req.params;
@@ -86,9 +79,11 @@ exports.issueCertificates = async (req, res) => {
     if (!templates.length) return res.status(400).json({ message: "No templates configured." });
 
     let issuedCount = 0;
+    let upgradedCount = 0;
     const errors = [];
 
     for (const student of event.registeredStudents) {
+      // 1. Determine Max Round
       let maxRound = 0;
       if (event.rounds && event.rounds.length > 0) {
         event.rounds.forEach(round => {
@@ -97,17 +92,36 @@ exports.issueCertificates = async (req, res) => {
         });
       }
 
-      if (maxRound === 0) continue;
+      if (maxRound === 0) continue; 
 
+      // 2. Find Matching Template
       const template = templates.find(t => t.assignedForRound == maxRound); 
-      if (!template) continue;
+      if (!template) continue; 
 
-      const existing = await IssuedCertificate.findOne({ event: eventId, user: student._id });
-      if (existing) continue; 
+      // 3. CHECK EXISTING & UPGRADE LOGIC (THE FIX IS HERE)
+      const existingCert = await IssuedCertificate.findOne({ event: eventId, user: student._id })
+        .populate('templateConfig'); 
 
-      // --- STEP 4: ACTUAL GENERATION & SAVING ---
+      if (existingCert) {
+        // If they already have THIS exact certificate, skip
+        if (existingCert.templateConfig._id.toString() === template._id.toString()) {
+            continue;
+        }
+
+        // If existing is from a LOWER round, we delete it (Upgrade)
+        if (existingCert.templateConfig.assignedForRound < maxRound) {
+            await IssuedCertificate.findByIdAndDelete(existingCert._id);
+            upgradedCount++;
+        } else {
+            // Existing is higher or equal, so we skip
+            continue; 
+        }
+      }
+
+      // 4. Generate New Certificate
       const verificationCode = uuidv4();
-      const verifyUrl = `${process.env.FRONTEND_URL}/verify/${verificationCode}`;
+      // Corrected URL for HashRouter
+      const verifyUrl = `${process.env.FRONTEND_URL}/#/verify/${verificationCode}`;
       const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(verifyUrl)}`;
 
       try {
@@ -123,18 +137,12 @@ exports.issueCertificates = async (req, res) => {
               "certificate_tag": { "text": template.tag } 
             }
           },
-          { 
-            headers: { 
-              'Authorization': `Bearer ${API_KEY}`, 
-              'Content-Type': 'application/json' 
-            } 
-          }
+          { headers: { 'Authorization': `Bearer ${API_KEY}` } }
         );
 
         const pdfUrl = response.data.render_url || response.data.url;
 
         if (pdfUrl) {
-          // THIS IS WHAT MAKES THE DATA APPEAR ON THE FRONTEND
           await IssuedCertificate.create({
             user: student._id,
             event: eventId,
@@ -145,29 +153,29 @@ exports.issueCertificates = async (req, res) => {
           issuedCount++;
         }
       } catch (apiErr) {
-        console.error(`API Error for ${student.name}:`, apiErr.response?.data || apiErr.message);
+        console.error(`Gen Error ${student.name}`);
         errors.push(student.name);
       }
     }
 
-    res.status(200).json({ message: `Success! Issued ${issuedCount} new certificates.`, errors });
+    res.status(200).json({ 
+        message: `Processed! Issued ${issuedCount} new certificates. Upgraded ${upgradedCount} students.`, 
+        errors 
+    });
   } catch (error) {
     console.error("Issuance Error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
 
-
-// --- 3. STUDENT ACCESS ---
+// --- 3. STUDENT & PUBLIC ACCESS ---
 
 exports.getMyCertificates = async (req, res) => {
   try {
     if (!req.user || !req.user.id) {
       return res.status(401).json({ message: "User not authenticated" });
     }
-
     const studentId = req.user.id; 
-
     const certificates = await IssuedCertificate.find({ user: studentId })
       .populate('event', 'title startDate') 
       .populate('templateConfig', 'name tag') 
@@ -183,16 +191,12 @@ exports.getMyCertificates = async (req, res) => {
 exports.verifyCertificate = async (req, res) => {
   try {
     const { code } = req.params;
-    
-    // Find certificate and populate all necessary student and event details
     const cert = await IssuedCertificate.findOne({ verificationCode: code })
-      .populate('user', 'name email studentProfile') // Pulls name, email, and academic details
+      .populate('user', 'name email studentProfile') 
       .populate('event', 'title startDate location department')
       .populate('templateConfig', 'tag name');
 
-    if (!cert) {
-      return res.status(404).json({ success: false, message: "Invalid verification code." });
-    }
+    if (!cert) return res.status(404).json({ success: false, message: "Invalid verification code." });
     
     res.status(200).json({ success: true, data: cert });
   } catch (error) {
@@ -200,4 +204,3 @@ exports.verifyCertificate = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error during verification." });
   }
 };
-
