@@ -74,13 +74,17 @@ export default function StudentsDataGrid() {
     { 
       field: 'avatar', 
       headerName: '', 
-      width: 50, 
+      width: 60, 
       sortable: false, 
       filterable: false,
+      align: 'center', // Horizontally centers the Avatar column
       renderCell: (params) => (
-        <Avatar src={params.row.profileImage} sx={{ width: 30, height: 30, fontSize: '0.8rem' }}>
-            {params.row.name.charAt(0)}
-        </Avatar>
+        // Wrapper ensures absolute vertical & horizontal centering
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+          <Avatar src={params.row.profileImage} sx={{ width: 30, height: 30, fontSize: '0.8rem' }}>
+              {params.row.name?.charAt(0)} 
+          </Avatar>
+        </Box>
       )
     },
     { field: 'name', headerName: 'Name', flex: 1, minWidth: 150 },
@@ -94,14 +98,16 @@ export default function StudentsDataGrid() {
       width: 120, 
       type: 'boolean',
       renderCell: (params) => (
-        <Tooltip title="Toggle Verification">
-            <Switch 
-                checked={params.value} 
-                onChange={() => handleToggleVerify(params.row.id)}
-                color="success"
-                size="small"
-            />
-        </Tooltip>
+        <Box sx={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+          <Tooltip title="Toggle Verification">
+              <Switch 
+                  checked={params.value} 
+                  onChange={() => handleToggleVerify(params.row.id)}
+                  color="success"
+                  size="small"
+              />
+          </Tooltip>
+        </Box>
       )
     },
     { 
@@ -109,9 +115,12 @@ export default function StudentsDataGrid() {
       headerName: 'Status',
       width: 130,
       renderCell: (params) => (
-         params.row.isVerified ? 
-         <Chip icon={<CheckCircleIcon/>} label="Verified" size="small" color="success" variant="outlined" /> :
-         <Chip icon={<CancelIcon/>} label="Unverified" size="small" color="default" variant="outlined" />
+        <Box sx={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+          {params.row.isVerified ? 
+            <Chip icon={<CheckCircleIcon/>} label="Verified" size="small" color="success" variant="outlined" /> :
+            <Chip icon={<CancelIcon/>} label="Unverified" size="small" color="default" variant="outlined" />
+          }
+        </Box>
       )
     },
     {
@@ -119,16 +128,18 @@ export default function StudentsDataGrid() {
       headerName: 'Actions',
       width: 100,
       sortable: false,
+      align: 'center', // Horizontally centers the delete button
       renderCell: (params) => (
-        <Tooltip title="Delete Student">
-          <IconButton color="error" onClick={() => handleDelete(params.row.id)}>
-            <DeleteIcon />
-          </IconButton>
-        </Tooltip>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+          <Tooltip title="Delete Student">
+            <IconButton color="error" onClick={() => handleDelete(params.row.id)}>
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
+        </Box>
       ),
     },
   ];
-
   return (
     <Card variant="outlined">
       <CardHeader 
