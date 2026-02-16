@@ -351,7 +351,12 @@ export default function StudentDiscovery() {
                     '&:disabled': { bgcolor: isRegistered(selectedEvent) ? alpha(theme.palette.success.main, 0.7) : 'action.disabledBackground' }
                 }}
               >
-                {registering ? <CircularProgress size={24} color="inherit" /> : 
+                {registering ? <CircularProgress
+                                       size={20}
+                                       sx={{
+                                         color: 'white',
+                                       }}
+                  /> : 
                  isRegistered(selectedEvent) ? "✓ Already Registered" : 
                  (selectedEvent.maxSeats > 0 && (selectedEvent.registeredStudents?.length || 0) >= selectedEvent.maxSeats) ? "Sold Out" : 
                  "Confirm Registration"}
@@ -361,9 +366,31 @@ export default function StudentDiscovery() {
         )}
       </Dialog>
 
-      <Snackbar open={snackbar.open} autoHideDuration={4000} onClose={() => setSnackbar({ ...snackbar, open: false })}>
-        <Alert severity={snackbar.severity} sx={{ borderRadius: '12px', fontWeight: 500 }}>{snackbar.message}</Alert>
-      </Snackbar>
+      <Snackbar 
+  open={snackbar.open} 
+  autoHideDuration={4000} 
+  onClose={() => setSnackbar({ ...snackbar, open: false })}
+>
+  <Alert 
+    severity={snackbar.severity} 
+    variant="filled" // Using "filled" makes the background color much more prominent
+    sx={{ 
+      borderRadius: '12px', 
+      fontWeight: 600,
+      color: 'white', // Ensures text is readable
+      // Custom background colors based on severity
+      backgroundColor: 
+        snackbar.severity === 'success' ? '#38cb82' : 
+        snackbar.severity === 'error' ? '#FF7F7F' : 
+        undefined, // falls back to MUI default for 'info' or 'warning'
+      '& .MuiAlert-icon': {
+        color: 'white',
+      }
+    }}
+  >
+    {snackbar.message}
+  </Alert>
+</Snackbar>
     </Box>
   );
 }
