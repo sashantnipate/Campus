@@ -347,64 +347,64 @@ export default function CreateEventModal({ open, onClose, orgId, onSuccess, exis
 
             {/* FORM GRID */}
             <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' } }}>
-              <FieldWrapper label="Event Title" required fullWidth>
-                <TextField 
-                  name="title" 
-                  value={formData.title} 
-                  onChange={handleChange} 
-                  sx={cleanInputStyle} 
-                  placeholder="e.g. Annual Tech Symposium" 
-                />
-              </FieldWrapper>
+  
+  <FieldWrapper label="Event Title" required fullWidth>
+    <TextField 
+      name="title" 
+      value={formData.title} 
+      onChange={handleChange} 
+      placeholder="e.g. Annual Tech Symposium" 
+      sx={cleanInputStyle} 
+    />
+  </FieldWrapper>
 
-              <FieldWrapper label="Category">
-                <TextField select name="category" value={formData.category} onChange={handleChange} sx={cleanInputStyle}>
-                  {CATEGORIES.map((opt) => <MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>)}
-                </TextField>
-              </FieldWrapper>
+  <FieldWrapper label="Category">
+    <TextField select name="category" value={formData.category} onChange={handleChange} sx={cleanInputStyle}>
+      {CATEGORIES.map((opt) => <MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>)}
+    </TextField>
+  </FieldWrapper>
 
-              <FieldWrapper label="Department">
-                <TextField name="department" value={formData.department} onChange={handleChange} sx={cleanInputStyle} />
-              </FieldWrapper>
+  <FieldWrapper label="Department">
+    <TextField name="department" value={formData.department} onChange={handleChange} sx={cleanInputStyle} />
+  </FieldWrapper>
 
-              <FieldWrapper label="Starts" required>
-                <DateTimePicker 
-                  value={formData.startDate} 
-                  onChange={(val) => setFormData(prev => ({ ...prev, startDate: val }))} 
-                  slotProps={{ textField: { sx: cleanInputStyle, fullWidth: true } }} 
-                />
-              </FieldWrapper>
+  <FieldWrapper label="Starts" required>
+    <DateTimePicker 
+      value={formData.startDate} 
+      onChange={(val) => setFormData(prev => ({ ...prev, startDate: val }))} 
+      slotProps={{ textField: { sx: cleanInputStyle, fullWidth: true } }} 
+    />
+  </FieldWrapper>
 
-              <FieldWrapper label="Ends" required>
-                <DateTimePicker 
-                  value={formData.endDate} 
-                  onChange={(val) => setFormData(prev => ({ ...prev, endDate: val }))} 
-                  slotProps={{ textField: { sx: cleanInputStyle, fullWidth: true } }} 
-                />
-              </FieldWrapper>
+  <FieldWrapper label="Ends" required>
+    <DateTimePicker 
+      value={formData.endDate} 
+      onChange={(val) => setFormData(prev => ({ ...prev, endDate: val }))} 
+      slotProps={{ textField: { sx: cleanInputStyle, fullWidth: true } }} 
+    />
+  </FieldWrapper>
 
-              <FieldWrapper label="Location">
-                <TextField name="location" value={formData.location} onChange={handleChange} sx={cleanInputStyle} placeholder="e.g. Auditorium A" />
-              </FieldWrapper>
+  <FieldWrapper label="Location">
+    <TextField name="location" value={formData.location} onChange={handleChange} sx={cleanInputStyle} placeholder="e.g. Auditorium A" />
+  </FieldWrapper>
 
-              <FieldWrapper label="Max Seats">
-                <TextField type="number" name="maxSeats" value={formData.maxSeats} onChange={handleChange} sx={cleanInputStyle} placeholder="0 for unlimited" />
-              </FieldWrapper>
+  <FieldWrapper label="Max Seats">
+    <TextField type="number" name="maxSeats" value={formData.maxSeats} onChange={handleChange} sx={cleanInputStyle} placeholder="0 for unlimited" />
+  </FieldWrapper>
 
-              <FieldWrapper label="Description" required fullWidth>
-                <TextField 
-                  multiline 
-                  minRows={4} 
-                  maxRows={15}
-                  name="description" 
-                  value={formData.description} 
-                  onChange={handleChange} 
-                  sx={cleanInputStyle} 
-                  placeholder="What is this event about?" 
-                />
-              </FieldWrapper>
-            </Box>
-
+  <FieldWrapper label="Description" required fullWidth sx={{ gridColumn: { sm: 'span 2' } }}>
+    <TextField 
+      multiline 
+      minRows={4} 
+      name="description" 
+      value={formData.description} 
+      onChange={handleChange} 
+      // We override the centering for multiline text
+      sx={{ ...cleanInputStyle, '& .MuiInputBase-input': { height: 'auto', padding: '12px 14px' } }} 
+      placeholder="What is this event about?" 
+    />
+  </FieldWrapper>
+</Box>
             {/* ROUNDS SECTION */}
             <Box>
               <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
