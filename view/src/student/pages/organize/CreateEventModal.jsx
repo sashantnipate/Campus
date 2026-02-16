@@ -347,64 +347,136 @@ export default function CreateEventModal({ open, onClose, orgId, onSuccess, exis
 
             {/* FORM GRID */}
             <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' } }}>
-  
-  <FieldWrapper label="Event Title" required fullWidth>
-    <TextField 
-      name="title" 
-      value={formData.title} 
-      onChange={handleChange} 
-      placeholder="e.g. Annual Tech Symposium" 
-      sx={cleanInputStyle} 
-    />
-  </FieldWrapper>
+              <FieldWrapper label="Event Title" required fullWidth>
+                <TextField 
+                 name="title" 
+                  value={formData.title} 
+                  onChange={handleChange} 
+                  placeholder="e.g. Annual Tech Symposium" 
+                  sx={{ 
+                    ...cleanInputStyle, 
+                    width: '100%',
+                    '& .MuiInputBase-input': {
+                      height: '1.5em',      // Set a fixed height
+                      padding: '12px 14px', // Equal vertical padding
+                      display: 'flex',
+                      alignItems: 'center', // Centers text vertically
+                    },
+                    // If you are using a specific height on the whole box:
+                    '& .MuiOutlinedInput-root': {
+                       display: 'flex',
+                       alignItems: 'center',
+                    }
+                  }} 
+                />
+              </FieldWrapper>
 
-  <FieldWrapper label="Category">
-    <TextField select name="category" value={formData.category} onChange={handleChange} sx={cleanInputStyle}>
-      {CATEGORIES.map((opt) => <MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>)}
-    </TextField>
-  </FieldWrapper>
+              <FieldWrapper label="Category">
+                <TextField select name="category" value={formData.category} onChange={handleChange} 
+                      sx={{cleanInputStyle,'& .MuiInputBase-input': {
+                            height: '1.5em',      // Set a fixed height
+                            padding: '12px 14px', // Equal vertical padding
+                            display: 'flex',
+                            alignItems: 'center', // Centers text vertically
+                          },
+                          // If you are using a specific height on the whole box:
+                          '& .MuiOutlinedInput-root': {
+                             display: 'flex',
+                             alignItems: 'center',
+                          }}}>
+                        {CATEGORIES.map((opt) => <MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>)}
+                </TextField>
+              </FieldWrapper>
 
-  <FieldWrapper label="Department">
-    <TextField name="department" value={formData.department} onChange={handleChange} sx={cleanInputStyle} />
-  </FieldWrapper>
+              <FieldWrapper label="Department">
+                <TextField name="department" value={formData.department} onChange={handleChange} 
+                sx={{...cleanInputStyle, '& .MuiInputBase-input': {
+                      height: '1.5em',      // Set a fixed height
+                      padding: '12px 14px', // Equal vertical padding
+                      display: 'flex',
+                      alignItems: 'center', // Centers text vertically
+                    },
+                    // If you are using a specific height on the whole box:
+                    '& .MuiOutlinedInput-root': {
+                       display: 'flex',
+                       alignItems: 'center',
+                    }}} />
+              </FieldWrapper>
 
-  <FieldWrapper label="Starts" required>
-    <DateTimePicker 
-      value={formData.startDate} 
-      onChange={(val) => setFormData(prev => ({ ...prev, startDate: val }))} 
-      slotProps={{ textField: { sx: cleanInputStyle, fullWidth: true } }} 
-    />
-  </FieldWrapper>
+              <FieldWrapper label="Starts" required>
+                <DateTimePicker 
+                  value={formData.startDate} 
+                  onChange={(val) => setFormData(prev => ({ ...prev, startDate: val }))} 
+                  slotProps={{ textField: { sx: cleanInputStyle, fullWidth: true } }} 
+                />
+              </FieldWrapper>
 
-  <FieldWrapper label="Ends" required>
-    <DateTimePicker 
-      value={formData.endDate} 
-      onChange={(val) => setFormData(prev => ({ ...prev, endDate: val }))} 
-      slotProps={{ textField: { sx: cleanInputStyle, fullWidth: true } }} 
-    />
-  </FieldWrapper>
+              <FieldWrapper label="Ends" required>
+                <DateTimePicker 
+                  value={formData.endDate} 
+                  onChange={(val) => setFormData(prev => ({ ...prev, endDate: val }))} 
+                  slotProps={{ textField: { sx: cleanInputStyle, fullWidth: true } }} 
+                />
+              </FieldWrapper>
 
-  <FieldWrapper label="Location">
-    <TextField name="location" value={formData.location} onChange={handleChange} sx={cleanInputStyle} placeholder="e.g. Auditorium A" />
-  </FieldWrapper>
+              <FieldWrapper label="Location">
+                <TextField name="location" value={formData.location} onChange={handleChange} 
+                sx={{...cleanInputStyle, '& .MuiInputBase-input': {
+                      height: '1.5em',      // Set a fixed height
+                      padding: '12px 14px', // Equal vertical padding
+                      display: 'flex',
+                      alignItems: 'center', // Centers text vertically
+                    },
+                    // If you are using a specific height on the whole box:
+                    '& .MuiOutlinedInput-root': {
+                       display: 'flex',
+                       alignItems: 'center',
+                    }}} placeholder="e.g. Auditorium A" />
+              </FieldWrapper>
 
-  <FieldWrapper label="Max Seats">
-    <TextField type="number" name="maxSeats" value={formData.maxSeats} onChange={handleChange} sx={cleanInputStyle} placeholder="0 for unlimited" />
-  </FieldWrapper>
+              <FieldWrapper label="Max Seats">
+                <TextField type="number" name="maxSeats" value={formData.maxSeats} onChange={handleChange} 
+                sx={{...cleanInputStyle, '& .MuiInputBase-input': {
+                      height: '1.5em',      // Set a fixed height
+                      padding: '12px 14px', // Equal vertical padding
+                      display: 'flex',
+                      alignItems: 'center', // Centers text vertically
+                    },
+                    // If you are using a specific height on the whole box:
+                    '& .MuiOutlinedInput-root': {
+                       display: 'flex',
+                       alignItems: 'center',
+                    }}} 
+                    placeholder="0 for unlimited" />
+              </FieldWrapper>
 
-  <FieldWrapper label="Description" required fullWidth sx={{ gridColumn: { sm: 'span 2' } }}>
-    <TextField 
-      multiline 
-      minRows={4} 
-      name="description" 
-      value={formData.description} 
-      onChange={handleChange} 
-      // We override the centering for multiline text
-      sx={{ ...cleanInputStyle, '& .MuiInputBase-input': { height: 'auto', padding: '12px 14px' } }} 
-      placeholder="What is this event about?" 
-    />
-  </FieldWrapper>
-</Box>
+            <FieldWrapper label="Description" required fullWidth>
+                  <TextField 
+                    multiline 
+                    minRows={7} 
+                    maxRows={15}
+                    name="description" 
+                    value={formData.description} 
+                    onChange={handleChange} 
+                    placeholder="What is this event about?" 
+                    sx={{ 
+                      ...cleanInputStyle, 
+                      // This override fixes the overflow by allowing the box to grow
+                      '& .MuiInputBase-input': {
+                        height: 'auto !important', 
+                        padding: '4px 6px', // Smaller vertical padding for multiline looks better
+                        overflow: 'auto',   // Enables scrollbar if it hits maxRows
+                      },
+                      '& .MuiOutlinedInput-root': {
+                       height: 'auto',     // Allows the container to expand with the text
+                        alignItems: 'flex-start', // Starts text at the top instead of centering
+                        padding: '12px 14px',
+                     }
+                    }} 
+                  />
+                  </FieldWrapper>
+            </Box>
+
             {/* ROUNDS SECTION */}
             <Box>
               <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
@@ -422,7 +494,7 @@ export default function CreateEventModal({ open, onClose, orgId, onSuccess, exis
               {hasRounds && (
                 <Stack spacing={2}>
                   {rounds.map((round, index) => (
-                    <Paper key={index} elevation={0} sx={{ 
+                    <Paper key={index} elevation={3} sx={{ 
                       p: 2.5, borderRadius: '16px', border: `1px solid ${alpha(theme.palette.divider, 0.6)}`, bgcolor: 'background.paper' 
                     }}>
                       <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
@@ -434,12 +506,33 @@ export default function CreateEventModal({ open, onClose, orgId, onSuccess, exis
                         )}
                       </Stack>
                       <Stack spacing={2}>
-                        <TextField size="small" placeholder="Stage Title" value={round.title} onChange={(e) => handleRoundChange(index, 'title', e.target.value)} sx={cleanInputStyle} fullWidth />
+                        <TextField size="small" placeholder="Stage Title" value={round.title} onChange={(e) => handleRoundChange(index, 'title', e.target.value)} 
+                        sx={{...cleanInputStyle,bgcolor: 'background.paper',
+                            '& .MuiInputBase-input': {height: 'auto !important', 
+                                        padding: '4px 6px', // Smaller vertical padding for multiline looks better
+                                        overflow: 'auto',
+                                        
+                                      },
+                            '& .MuiOutlinedInput-root': {
+                             height: 'auto',     // Allows the container to expand with the text
+                              alignItems: 'flex-start', // Starts text at the top instead of centering
+                              padding: '12px 14px',
+                           }}} fullWidth />
                         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
                            <DateTimePicker label="Starts" value={round.startDate} onChange={(val) => handleRoundChange(index, 'startDate', val)} slotProps={{ textField: { size: 'small', sx: cleanInputStyle, fullWidth: true } }} />
                            <DateTimePicker label="Ends" value={round.endDate} onChange={(val) => handleRoundChange(index, 'endDate', val)} slotProps={{ textField: { size: 'small', sx: cleanInputStyle, fullWidth: true } }} />
                         </Stack>
-                        <TextField size="small" placeholder="Instructions..." value={round.description} onChange={(e) => handleRoundChange(index, 'description', e.target.value)} sx={cleanInputStyle} fullWidth multiline rows={10} />
+                        <TextField size="small" placeholder="Instructions..." value={round.description} onChange={(e) => handleRoundChange(index, 'description', e.target.value)} 
+                        sx={{...cleanInputStyle,
+                            '& .MuiInputBase-input': {height: 'auto !important', 
+                                        padding: '4px 6px', // Smaller vertical padding for multiline looks better
+                                        overflow: 'auto',
+                                      },
+                            '& .MuiOutlinedInput-root': {
+                             height: 'auto',     // Allows the container to expand with the text
+                              alignItems: 'flex-start', // Starts text at the top instead of centering
+                              padding: '12px 14px',
+                           }}} fullWidth multiline rows={1} />
                       </Stack>
                     </Paper>
                   ))}
