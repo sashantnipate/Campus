@@ -7,14 +7,16 @@ import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import MenuContent from './MenuContent';
+import logoo from '../../assets/logoo.png';
 
 const drawerWidth = 240;
 
+// FIX 1: Use standard CSS 'marginTop' instead of the 'mt' shorthand
 const Drawer = styled(MuiDrawer)({
   width: drawerWidth,
   flexShrink: 0,
   boxSizing: 'border-box',
-  mt: 10,
+  marginTop: '80px', // In MUI, an 'mt: 10' usually translates to 80px (10 * 8px)
   [`& .${drawerClasses.paper}`]: {
     width: drawerWidth,
     boxSizing: 'border-box',
@@ -22,12 +24,24 @@ const Drawer = styled(MuiDrawer)({
 });
 
 export default function SideMenu({ activeTab }) {
-  // 1. Get User Data
-  const user = JSON.parse(localStorage.getItem('user')) || {
+  
+  // FIX 2: Safely parse localStorage to prevent JSON or SSR crashes
+  const [user, setUser] = React.useState({
     name: 'Admin User',
     email: 'admin@campus.edu',
     profileImage: ''
-  };
+  });
+
+  React.useEffect(() => {
+    try {
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      }
+    } catch (error) {
+      console.error("Failed to parse user data from localStorage:", error);
+    }
+  }, []);
 
   return (
     <Drawer
@@ -44,14 +58,36 @@ export default function SideMenu({ activeTab }) {
         sx={{
           display: 'flex',
           mt: 'calc(var(--template-frame-height, 0px) + 4px)',
-          p: 2,
+          paddingInline: 1,
           alignItems: 'center',
           justifyContent: 'center'
         }}
-      >
-         <Typography variant="h6" component="div" sx={{ fontWeight: 'bold', color: 'primary.main', letterSpacing: 1 }}>
+      >   
+        <Box sx={{ display: 'flex', alignItems: 'center', }}>
+          <img
+            src={logoo}
+            alt="EventFlow Logo"
+            style={{
+              height: '130px',     // Adjusted for better sidebar proportions  
+              width: '100px',      
+              objectFit: 'cover', 
+              objectPosition: 'center', 
+              display: 'block',
+              borderRadius: '8px' 
+            }}
+          />
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: 700,
+              fontSize: '1.3rem',
+              color: '#1b129cff',
+              whiteSpace: 'nowrap',
+            }}
+          >
             Event Flow
-        </Typography>
+          </Typography>
+        </Box>
       </Box>
       <Divider />
 
@@ -83,7 +119,10 @@ export default function SideMenu({ activeTab }) {
           alt={user.name}
           src={user.profileImage || "/static/images/avatar/7.jpg"}
           sx={{ width: 36, height: 36 }}
-        />
+        >
+            {/* Fallback to initials if image fails to load */}
+            {user.name?.charAt(0)}
+        </Avatar>
         <Box sx={{ mr: 'auto', overflow: 'hidden' }}>
           <Typography variant="body2" sx={{ fontWeight: 500, lineHeight: '16px', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
             {user.name}
