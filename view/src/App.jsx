@@ -37,14 +37,14 @@ import EventRoundConsole from "./student/pages/organize/EventRoundConsole";
 import AdminLogin from "./auth/pages/AdminLogin";
 import AdminProfile from "./admin/components/AdminProfile";
 import StudentsDataGrid from "./admin/components/StudentsDataGrid";
-
+import LandingPage from './landing/LandingPage';
 function App(props) {
   return (
     <AppTheme {...props}>
       <CssBaseline enableColorScheme />
       <Router>
         <Routes>
-          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/" element={<LandingPage/>} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/admin-login" element={<AdminLogin/>}/>
