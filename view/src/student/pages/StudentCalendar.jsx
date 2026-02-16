@@ -31,6 +31,8 @@ import AccessTimeRoundedIcon from '@mui/icons-material/AccessTimeRounded';
 import LocationOnRoundedIcon from '@mui/icons-material/LocationOnRounded';
 
 import { fetchStudentEvents } from '../services/studentEventService';
+import { useNavigate } from 'react-router-dom';
+// import Maps from './Maps';
 
 export default function StudentCalendar() {
   const theme = useTheme();
@@ -41,7 +43,7 @@ export default function StudentCalendar() {
   
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [selectedEvent, setSelectedEvent] = React.useState(null); 
-  
+  const navigate = useNavigate();
   const [calendarEvents, setCalendarEvents] = React.useState([]); 
 
   // Bright color palette (no yellow) – each event gets one of these
@@ -288,10 +290,10 @@ export default function StudentCalendar() {
         open={isModalOpen} 
         onClose={closeModal}
         PaperProps={{
-          sx: { borderRadius: '20px', p: 1, maxWidth: '450px', width: '100%' }
+          sx: { borderRadius: '20px', p: 1, maxWidth: '800px', width: '100%' }
         }}
       >
-        <DialogTitle sx={{ fontWeight: 800, fontSize: '1.5rem', pb: 1 }}>
+        <DialogTitle sx={{ fontWeight: 800, fontSize: '1.3rem', pb: 1 }}>
           {selectedEvent?.title}
         </DialogTitle>
         
@@ -312,7 +314,7 @@ export default function StudentCalendar() {
               />
             </Stack>
 
-            <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.6 }}>
+            <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.6, whiteSpace: 'pre-line', }}>
               {selectedEvent?.description}
             </Typography>
 
@@ -343,7 +345,10 @@ export default function StudentCalendar() {
           <Button 
             variant="contained" 
             disableElevation
-            onClick={() => alert("Redirecting to Discover Page...")}
+            onClick={() => {
+              closeModal();
+              navigate(`/student/event/${selectedEvent._id}`);
+            }}
             sx={{ 
               textTransform: 'none', 
               fontWeight: 700, 
