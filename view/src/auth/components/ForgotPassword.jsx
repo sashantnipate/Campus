@@ -14,39 +14,41 @@ import Stack from '@mui/material/Stack';
 // Import services
 import { sendForgotPasswordOtp, verifyOtp, resetPassword, verifyForgetPasswordOtp } from '../services/authService';
 
+// ... (imports remain the same)
+
 function ForgotPassword({ open, handleClose }) {
-  // State for flow control
-  const [step, setStep] = React.useState(0); // 0: Email, 1: OTP, 2: New Password
+  const [step, setStep] = React.useState(0);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState('');
   const [successMsg, setSuccessMsg] = React.useState('');
 
-  // Form Data
   const [email, setEmail] = React.useState('');
   const [otp, setOtp] = React.useState('');
   const [newPassword, setNewPassword] = React.useState('');
 
-  // Reset state when dialog opens/closes
+  // Clear all states on close/open
+  const resetForm = () => {
+    setStep(0);
+    setEmail('');
+    setOtp('');
+    setNewPassword('');
+    setError('');
+    setSuccessMsg('');
+  };
+
   React.useEffect(() => {
-    if (open) {
-      setStep(0);
-      setEmail('');
-      setOtp('');
-      setNewPassword('');
-      setError('');
-      setSuccessMsg('');
-    }
+    if (open) resetForm();
   }, [open]);
 
-  // STEP 1: Handle Email Submission
   const handleSendOtp = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setSuccessMsg(''); // Clear previous success messages
     try {
       await sendForgotPasswordOtp(email);
       setSuccessMsg('OTP sent to your email.');
-      setStep(1); // Move to OTP step
+      setStep(1);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to send OTP.');
     } finally {
@@ -54,15 +56,15 @@ function ForgotPassword({ open, handleClose }) {
     }
   };
 
-  // STEP 2: Handle OTP Verification
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setSuccessMsg(''); 
     try {
       await verifyForgetPasswordOtp(email, otp);
       setSuccessMsg('OTP Verified! Please enter new password.');
-      setStep(2); // Move to Password step
+      setStep(2);
     } catch (err) {
       setError(err.response?.data?.message || 'Invalid OTP.');
     } finally {
@@ -70,16 +72,16 @@ function ForgotPassword({ open, handleClose }) {
     }
   };
 
-  // STEP 3: Handle Password Reset
   const handleResetPassword = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
     try {
-      await resetPassword(email, newPassword);
+      // NOTE: Ensure your backend doesn't need the OTP here too!
+      await resetPassword(email, newPassword); 
       setSuccessMsg('Password reset successfully!');
       setTimeout(() => {
-        handleClose(); // Close dialog on success
+        handleClose();
       }, 1500);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to reset password.');
@@ -104,63 +106,77 @@ function ForgotPassword({ open, handleClose }) {
         {step === 0 ? 'Reset Password' : step === 1 ? 'Verify OTP' : 'Set New Password'}
       </DialogTitle>
       
-      <DialogContent
-        sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: '100%' }}
-      >
+      <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: '100%' }}>
         <DialogContentText>
-          {step === 0 && "Enter your account's email address, and we'll send you an OTP."}
+          {step === 0 && "Enter your account's email address."}
           {step === 1 && `Enter the 6-digit OTP sent to ${email}.`}
-          {step === 2 && "Create a new strong password for your account."}
+          {step === 2 && "Create a new strong password."}
         </DialogContentText>
 
-        {/* Show Error or Success Alerts */}
-        {error && <Alert severity="error" sx={{ mb: 1 }}>{error}</Alert>}
-        {successMsg && <Alert severity="success" sx={{ mb: 1 }}>{successMsg}</Alert>}
+        {/* Error Alert */}
+        {error && (
+        <Alert 
+          severity="error" 
+           sx={{ 
+            mb: 2, 
+            backgroundColor: '#FF7F7F', // Custom red
+            color: 'black',
+            '& .MuiAlert-icon': { color: 'black' } 
+      }}
+   >
+      {error}
+  </Alert>
+)}
 
-        {/* STEP 0: EMAIL INPUT */}
+{/* Success Alert */}
+{successMsg && (
+  <Alert 
+    severity="success" 
+    sx={{ 
+      mb: 2, 
+      backgroundColor: '#38cb82', // Custom green
+      color: 'black',
+      '& .MuiAlert-icon': { color: 'black' } 
+    }}
+  >
+    {successMsg}
+  </Alert>
+)}
+
         {step === 0 && (
           <OutlinedInput
+            key="email-input"
             autoFocus
             required
-            margin="dense"
-            id="email"
-            name="email"
-            placeholder="Email address"
             type="email"
             fullWidth
+            placeholder="Email address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
         )}
 
-        {/* STEP 1: OTP INPUT */}
         {step === 1 && (
           <OutlinedInput
+            key="otp-input"
             autoFocus
             required
-            margin="dense"
-            id="otp"
-            name="otp"
-            placeholder="Enter 6-digit OTP"
-            type="text"
             fullWidth
+            placeholder="Enter 6-digit OTP"
             value={otp}
             onChange={(e) => setOtp(e.target.value)}
             inputProps={{ maxLength: 6 }}
           />
         )}
 
-        {/* STEP 2: NEW PASSWORD INPUT */}
         {step === 2 && (
           <OutlinedInput
+            key="pw-input"
             autoFocus
             required
-            margin="dense"
-            id="newPassword"
-            name="newPassword"
-            placeholder="New Password"
             type="password"
             fullWidth
+            placeholder="New Password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
           />
@@ -168,20 +184,12 @@ function ForgotPassword({ open, handleClose }) {
       </DialogContent>
 
       <DialogActions sx={{ pb: 3, px: 3 }}>
-        <Button onClick={handleClose} disabled={loading}>
-          Cancel
-        </Button>
-        <Button 
-          variant="contained" 
-          type="submit" 
-          disabled={loading}
-          // Dynamic text based on step
-        >
-          {loading ? <CircularProgress size={24} color="inherit" /> : 
-            step === 0 ? 'Send OTP' : 
-            step === 1 ? 'Verify OTP' : 
-            'Reset Password'
-          }
+        <Button onClick={handleClose} disabled={loading}>Cancel</Button>
+        <Button variant="contained" type="submit" disabled={loading}>
+          {loading ? <CircularProgress size={24} sx={{
+            color:'white',
+          }} /> : 
+           step === 0 ? 'Send OTP' : step === 1 ? 'Verify OTP' : 'Reset Password'}
         </Button>
       </DialogActions>
     </Dialog>

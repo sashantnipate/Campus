@@ -90,7 +90,7 @@ export default function SignInCard() {
 
         setTimeout(() => {
           navigate('/student');        
-        }, 100);
+        }, 800);
       }else {
          throw new Error("No token received");
       }
