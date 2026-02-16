@@ -290,10 +290,10 @@ export default function StudentCalendar() {
         open={isModalOpen} 
         onClose={closeModal}
         PaperProps={{
-          sx: { borderRadius: '20px', p: 1, maxWidth: '450px', width: '100%' }
+          sx: { borderRadius: '20px', p: 1, maxWidth: '800px', width: '100%' }
         }}
       >
-        <DialogTitle sx={{ fontWeight: 800, fontSize: '1.5rem', pb: 1 }}>
+        <DialogTitle sx={{ fontWeight: 800, fontSize: '1.3rem', pb: 1 }}>
           {selectedEvent?.title}
         </DialogTitle>
         
@@ -314,7 +314,7 @@ export default function StudentCalendar() {
               />
             </Stack>
 
-            <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.6 }}>
+            <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.6, whiteSpace: 'pre-line', }}>
               {selectedEvent?.description}
             </Typography>
 
