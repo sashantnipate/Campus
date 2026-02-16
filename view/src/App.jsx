@@ -88,16 +88,18 @@ function App(props) {
           </Route>
 
           {/* ADMIN ROUTES */}
-          <Route path="/admin" element={<Dashboard />}>
-            {/* Default to 'home' when visiting /admin */}
-            <Route index element={<Navigate to="home" replace />} />
-            
-            {/* These render INSIDE the <Outlet /> of Dashboard */}
-            <Route path="home" element={<MainGrid />} /> {/* Import MainGrid in App.js */}
-            <Route path="calendar" element={<EventCalendar/>} /> {/* Import EventCalendar in App.js */}
-            <Route path="profile" element={<AdminProfile />} />
-            <Route path="data" element={<StudentsDataGrid />} />
-        </Route>
+          <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+            <Route path="/admin" element={<Dashboard />}>
+               {/* Default redirect to 'home' */}
+               <Route index element={<Navigate to="home" replace />} />
+               
+               {/* Nested Admin Routes */}
+               <Route path="home" element={<MainGrid />} /> 
+               <Route path="calendar" element={<EventCalendar/>} /> 
+               <Route path="profile" element={<AdminProfile />} />
+               <Route path="data" element={<StudentsDataGrid />} />
+            </Route>
+          </Route>
 
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
