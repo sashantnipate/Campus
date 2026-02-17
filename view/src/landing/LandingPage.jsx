@@ -26,11 +26,16 @@ import {
   PlayCircleOutline,
   LightMode,
   DarkMode,
+  Event as EventIcon,
+  Analytics as AnalyticsIcon,
+  CardMembership as CardMembershipIcon,
+  Layers as LayersIcon
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import logoo from '../assets/logoo.png'; // Make sure this path is correct in your project
 
-// Theme configuration
+// --- Theme Configuration ---
 const getDesignTokens = (mode) => {
   const brand = {
     50: 'hsl(210, 100%, 95%)',
@@ -90,47 +95,48 @@ const getDesignTokens = (mode) => {
   };
 };
 
+// --- Main Component ---
 const LandingPage = () => {
   const navigate = useNavigate();
   const [mode, setMode] = useState('light');
-
   const theme = createTheme(getDesignTokens(mode));
 
   const toggleColorMode = () => {
     setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
   };
 
+  // --- Data Arrays ---
   const features = [
     {
-      icon: <CalendarMonth sx={{ fontSize: 40 }} />,
-      title: 'Event Creation',
-      description: 'Create and manage campus events with ease. Set dates, locations, and track registrations in real-time.',
+      title: "Streamlined Workflow",
+      description: "Manage multi-round events, track participant progress, and collaborate seamlessly.",
+      icon: <EventIcon fontSize="large" />
     },
     {
-      icon: <Groups sx={{ fontSize: 40 }} />,
-      title: 'Team Collaboration',
-      description: 'Build your organization team and collaborate on event management with role-based access.',
+      title: "Data-Driven Insights",
+      description: "Get real-time analytics and comprehensive reports to make informed decisions.",
+      icon: <AnalyticsIcon fontSize="large" />
     },
     {
-      icon: <CheckCircle sx={{ fontSize: 40 }} />,
-      title: 'Attendance Tracking',
-      description: 'Mark attendance for multi-round events and track student progress through each stage.',
+      title: "Attendance Tracking",
+      description: "Easily manage check-ins at the door and keep accurate records of attendance.",
+      icon: <CheckCircle fontSize="large" />
     },
     {
-      icon: <EmojiEvents sx={{ fontSize: 40 }} />,
-      title: 'Certificates',
-      description: 'Generate beautiful certificates automatically for participants, winners, and organizers.',
+      title: "Automated Certificates",
+      description: "Generate and distribute custom certificates to attendees automatically.",
+      icon: <CardMembershipIcon fontSize="large" />
     },
     {
-      icon: <Timeline sx={{ fontSize: 40 }} />,
-      title: 'Analytics Dashboard',
-      description: 'Comprehensive insights with charts, graphs, and real-time data about your events.',
+      title: "Team Collaboration",
+      description: "Assign roles, set permissions, and keep your organizing committee aligned.",
+      icon: <Groups fontSize="large" />
     },
     {
-      icon: <TrendingUp sx={{ fontSize: 40 }} />,
-      title: 'Student Discovery',
-      description: 'Students can discover and register for events across all organizations on campus.',
-    },
+      title: "Multi-Round Management",
+      description: "Structure complex events with eliminations and multiple stages effortlessly.",
+      icon: <LayersIcon fontSize="large" />
+    }
   ];
 
   const stats = [
@@ -144,7 +150,8 @@ const LandingPage = () => {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
-        {/* Navigation */}
+        
+        {/* --- Navigation --- */}
         <AppBar
           position="sticky"
           elevation={0}
@@ -155,9 +162,30 @@ const LandingPage = () => {
           }}
         >
           <Container maxWidth="lg">
-            <Toolbar sx={{ justifyContent: 'space-between', py: 1.5 }}>
+            <Toolbar sx={{ justifyContent: 'space-between', py: 0.5 }}>
               <Stack direction="row" spacing={1} alignItems="center">
-                <CalendarMonth sx={{ color: 'primary.main', fontSize: 32 }} />
+                <div 
+                  style={{ 
+                    width: '55px', 
+                    height: '100px', 
+                    overflow: 'hidden',
+                    display: 'inline-block',
+                    borderRadius: '8px',
+                  }}
+                >
+                  <img
+                    src={logoo}
+                    alt="EventFlow Logo"
+                    style={{
+                      height: '100px',
+                      width: '55px',
+                      objectFit: 'cover',
+                      objectPosition: 'center',
+                      display: 'block',
+                      transform: 'scale(1.5)', 
+                    }}
+                  />
+                </div>
                 <Typography
                   variant="h5"
                   sx={{
@@ -166,7 +194,7 @@ const LandingPage = () => {
                     letterSpacing: '-0.5px',
                   }}
                 >
-                  Campus Events
+                  EVENT FLOW
                 </Typography>
               </Stack>
 
@@ -192,11 +220,11 @@ const LandingPage = () => {
                     px: 3,
                   }}
                 >
-                  Sign In
+                  Sign In as student
                 </Button>
                 <Button
                   variant="contained"
-                  onClick={() => navigate('/signup')}
+                  onClick={() => navigate('/admin/logoin')}
                   sx={{
                     borderRadius: '10px',
                     textTransform: 'none',
@@ -208,14 +236,14 @@ const LandingPage = () => {
                     },
                   }}
                 >
-                  Get Started
+                  Sign in as Admin
                 </Button>
               </Stack>
             </Toolbar>
           </Container>
         </AppBar>
 
-        {/* Hero Section */}
+        {/* --- Hero Section --- */}
         <Box
           sx={{
             background: mode === 'dark' 
@@ -279,26 +307,11 @@ const LandingPage = () => {
               >
                 Get Started Free
               </Button>
-              <Button
-                variant="outlined"
-                size="large"
-                startIcon={<PlayCircleOutline />}
-                sx={{
-                  borderRadius: '12px',
-                  textTransform: 'none',
-                  fontWeight: 600,
-                  fontSize: '1.1rem',
-                  py: 1.5,
-                  px: 4,
-                }}
-              >
-                Watch Demo
-              </Button>
             </Stack>
           </Container>
         </Box>
 
-        {/* Features Section */}
+        {/* --- Features Section (2x3 Grid) --- */}
         <Container maxWidth="lg" sx={{ py: { xs: 8, md: 12 } }}>
           <Box sx={{ mb: 8 }}>
             <Grid container spacing={6} alignItems="center">
@@ -317,19 +330,14 @@ const LandingPage = () => {
                 <Typography 
                   variant="h6" 
                   color="text.secondary" 
-                  sx={{ 
-                    lineHeight: 1.6,
-                    mb: 2,
-                  }}
+                  sx={{ lineHeight: 1.6, mb: 2 }}
                 >
                   Everything you need to run successful campus events
                 </Typography>
                 <Typography 
                   variant="body1" 
                   color="text.secondary" 
-                  sx={{ 
-                    lineHeight: 1.8,
-                  }}
+                  sx={{ lineHeight: 1.8 }}
                 >
                   From creating events to managing teams, tracking attendance, and issuing certificates - our comprehensive platform handles it all. Empower your student organization with tools designed specifically for campus event management.
                 </Typography>
@@ -348,19 +356,14 @@ const LandingPage = () => {
                   <Typography 
                     variant="body1" 
                     color="text.secondary" 
-                    sx={{ 
-                      lineHeight: 1.8,
-                      mb: 2,
-                    }}
+                    sx={{ lineHeight: 1.8, mb: 2 }}
                   >
                     <strong>Streamlined workflow:</strong> Manage multi-round events, track participant progress, and collaborate with your team members seamlessly.
                   </Typography>
                   <Typography 
                     variant="body1" 
                     color="text.secondary" 
-                    sx={{ 
-                      lineHeight: 1.8,
-                    }}
+                    sx={{ lineHeight: 1.8 }}
                   >
                     <strong>Data-driven insights:</strong> Get real-time analytics and comprehensive reports to make informed decisions about your events and improve engagement.
                   </Typography>
@@ -369,9 +372,10 @@ const LandingPage = () => {
             </Grid>
           </Box>
 
+          {/* --- BOTTOM 2x3 CARDS SECTION --- */}
           <Grid container spacing={4}>
             {features.map((feature, index) => (
-              <Grid item xs={12} sm={6} md={4} key={index}>
+              <Grid item xs={12} sm={6} md={6} key={index}>
                 <Card
                   sx={{
                     height: '100%',
@@ -380,6 +384,8 @@ const LandingPage = () => {
                     borderColor: 'divider',
                     transition: 'all 0.3s ease',
                     bgcolor: 'background.paper',
+                    display: 'flex',          
+                    flexDirection: 'column',  
                     '&:hover': {
                       boxShadow: 6,
                       transform: 'translateY(-8px)',
@@ -387,23 +393,23 @@ const LandingPage = () => {
                     },
                   }}
                 >
-                  <CardContent sx={{ p: 4, height: '100%', display: 'flex', flexDirection: 'column' }}>
+                  <CardContent sx={{ p: { xs: 3, md: 4 }, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
                     <Box
                       sx={{
-                        width: 64,
-                        height: 64,
+                        width: 56,
+                        height: 56,
                         borderRadius: '16px',
                         bgcolor: alpha(theme.palette.primary.main, 0.1),
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         color: 'primary.main',
-                        mb: 3,
+                        mb: 2.5,
                       }}
                     >
                       {feature.icon}
                     </Box>
-                    <Typography variant="h6" fontWeight={700} gutterBottom>
+                    <Typography variant="h6" fontWeight={700} gutterBottom sx={{ fontSize: { xs: '1.1rem', md: '1.25rem' }}}>
                       {feature.title}
                     </Typography>
                     <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.7, flexGrow: 1 }}>
@@ -416,7 +422,7 @@ const LandingPage = () => {
           </Grid>
         </Container>
 
-        {/* Stats Section */}
+        {/* --- Stats Section --- */}
         <Box
           sx={{
             bgcolor: mode === 'dark' 
@@ -425,11 +431,21 @@ const LandingPage = () => {
             py: { xs: 6, md: 8 },
           }}
         >
-          <Container maxWidth="lg">
-            <Grid container spacing={4}>
+          <Container maxWidth="lg"> 
+            <Grid 
+              container 
+              spacing={4} 
+              justifyContent="space-between" 
+              alignItems="center"
+            >
               {stats.map((stat, index) => (
                 <Grid item xs={6} md={3} key={index}>
-                  <Box sx={{ textAlign: 'center' }}>
+                  <Box sx={{ 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    alignItems: 'center', 
+                    textAlign: 'center' 
+                  }}>
                     <Typography
                       variant="h2"
                       sx={{
@@ -456,7 +472,7 @@ const LandingPage = () => {
           </Container>
         </Box>
 
-        {/* CTA Section */}
+        {/* --- CTA Section --- */}
         <Container maxWidth="md" sx={{ py: { xs: 8, md: 12 } }}>
           <Card
             sx={{
@@ -512,35 +528,14 @@ const LandingPage = () => {
                     },
                   }}
                 >
-                  Sign Up Now
-                </Button>
-                <Button
-                  variant="outlined"
-                  size="large"
-                  onClick={() => navigate('/signin')}
-                  sx={{
-                    borderColor: 'white',
-                    color: 'white',
-                    borderRadius: '12px',
-                    textTransform: 'none',
-                    fontWeight: 700,
-                    fontSize: '1.1rem',
-                    py: 1.5,
-                    px: 5,
-                    '&:hover': {
-                      borderColor: 'white',
-                      bgcolor: alpha('#ffffff', 0.1),
-                    },
-                  }}
-                >
-                  Sign In
+                  Get Started
                 </Button>
               </Stack>
             </CardContent>
           </Card>
         </Container>
 
-        {/* Footer */}
+        {/* --- Footer --- */}
         <Box
           sx={{
             bgcolor: mode === 'dark' ? 'grey.900' : 'grey.900',
@@ -570,15 +565,9 @@ const LandingPage = () => {
                       Product
                     </Typography>
                     <Stack spacing={1}>
-                      <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer', '&:hover': { color: 'grey.300' } }}>
-                        Features
-                      </Typography>
-                      <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer', '&:hover': { color: 'grey.300' } }}>
-                        Pricing
-                      </Typography>
-                      <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer', '&:hover': { color: 'grey.300' } }}>
-                        FAQ
-                      </Typography>
+                      <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer', '&:hover': { color: 'grey.300' } }}>Features</Typography>
+                      <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer', '&:hover': { color: 'grey.300' } }}>Pricing</Typography>
+                      <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer', '&:hover': { color: 'grey.300' } }}>FAQ</Typography>
                     </Stack>
                   </Grid>
                   <Grid item xs={6} sm={3}>
@@ -586,15 +575,9 @@ const LandingPage = () => {
                       Company
                     </Typography>
                     <Stack spacing={1}>
-                      <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer', '&:hover': { color: 'grey.300' } }}>
-                        About
-                      </Typography>
-                      <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer', '&:hover': { color: 'grey.300' } }}>
-                        Contact
-                      </Typography>
-                      <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer', '&:hover': { color: 'grey.300' } }}>
-                        Careers
-                      </Typography>
+                      <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer', '&:hover': { color: 'grey.300' } }}>About</Typography>
+                      <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer', '&:hover': { color: 'grey.300' } }}>Contact</Typography>
+                      <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer', '&:hover': { color: 'grey.300' } }}>Careers</Typography>
                     </Stack>
                   </Grid>
                   <Grid item xs={6} sm={3}>
@@ -602,15 +585,9 @@ const LandingPage = () => {
                       Resources
                     </Typography>
                     <Stack spacing={1}>
-                      <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer', '&:hover': { color: 'grey.300' } }}>
-                        Blog
-                      </Typography>
-                      <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer', '&:hover': { color: 'grey.300' } }}>
-                        Help Center
-                      </Typography>
-                      <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer', '&:hover': { color: 'grey.300' } }}>
-                        Community
-                      </Typography>
+                      <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer', '&:hover': { color: 'grey.300' } }}>Blog</Typography>
+                      <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer', '&:hover': { color: 'grey.300' } }}>Help Center</Typography>
+                      <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer', '&:hover': { color: 'grey.300' } }}>Community</Typography>
                     </Stack>
                   </Grid>
                   <Grid item xs={6} sm={3}>
@@ -618,15 +595,9 @@ const LandingPage = () => {
                       Legal
                     </Typography>
                     <Stack spacing={1}>
-                      <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer', '&:hover': { color: 'grey.300' } }}>
-                        Privacy
-                      </Typography>
-                      <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer', '&:hover': { color: 'grey.300' } }}>
-                        Terms
-                      </Typography>
-                      <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer', '&:hover': { color: 'grey.300' } }}>
-                        Security
-                      </Typography>
+                      <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer', '&:hover': { color: 'grey.300' } }}>Privacy</Typography>
+                      <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer', '&:hover': { color: 'grey.300' } }}>Terms</Typography>
+                      <Typography variant="body2" color="grey.400" sx={{ cursor: 'pointer', '&:hover': { color: 'grey.300' } }}>Security</Typography>
                     </Stack>
                   </Grid>
                 </Grid>
@@ -648,6 +619,7 @@ const LandingPage = () => {
             </Box>
           </Container>
         </Box>
+
       </Box>
     </ThemeProvider>
   );
