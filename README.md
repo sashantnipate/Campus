@@ -6,6 +6,9 @@ This repository contains:
 - Backend API: Express + MongoDB (`/controllers`, `/routes`, `/models`)
 - Frontend App: React + Vite + MUI (`/view`)
 
+Website Link :- https://campus-1-dvzb.onrender.com/
+
+please wait for our website to wake up
 ## Project Overview
 
 The system supports the complete lifecycle of campus events:
