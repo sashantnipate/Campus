@@ -73,9 +73,9 @@ export default function EventParticipants() {
           InputProps={{ startAdornment: <InputAdornment position="start"><SearchRoundedIcon fontSize="small" /></InputAdornment> }}
           sx={{ width: 300, bgcolor: 'background.paper' }}
         />
-        <Button variant="contained" startIcon={<DownloadRoundedIcon />} sx={{ borderRadius: '8px', textTransform: 'none', fontWeight: 500 }}>
+        {/* <Button variant="contained" startIcon={<DownloadRoundedIcon />} sx={{ borderRadius: '8px', textTransform: 'none', fontWeight: 500 }}>
           Export CSV
-        </Button>
+        </Button> */}
       </Stack>
 
       <TableContainer component={Paper} elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '16px' }}>
