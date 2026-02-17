@@ -137,9 +137,9 @@ export default function SignInCardAdmin() {
 
   return (
     <Card variant="outlined">
-      <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
+      {/* <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
         <SitemarkIcon />
-      </Box>
+      </Box> */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
         <AdminPanelSettingsIcon color="primary" />
         <Typography variant="h5" component="h1" sx={{}}>

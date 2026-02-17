@@ -173,7 +173,7 @@ export default function StudentDiscovery() {
       {/* Header */}
       <Stack direction={{ xs: 'column', md: 'row' }} spacing={3} alignItems={{ xs: 'flex-start', md: 'center' }} justifyContent="space-between" sx={{ mb: 5 }}>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 600, letterSpacing: '-0.5px', background: isDark ? 'linear-gradient(135deg, #4ECDC4 0%, #9B59B6 100%)' : 'linear-gradient(135deg, #FF6B6B 0%, #4ECDC4 100%)', backgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+          <Typography variant="h4" sx={{ fontWeight: 600, letterSpacing: '-0.5px', background: 'black', backgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
             Explore Events
           </Typography>
           <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
