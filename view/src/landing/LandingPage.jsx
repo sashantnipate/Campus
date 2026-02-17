@@ -224,7 +224,7 @@ const LandingPage = () => {
                 </Button>
                 <Button
                   variant="contained"
-                  onClick={() => navigate('/admin/logoin')}
+                  onClick={() => navigate('/admin-login')}
                   sx={{
                     borderRadius: '10px',
                     textTransform: 'none',
