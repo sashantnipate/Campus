@@ -1,17 +1,35 @@
-import Avatar from '@mui/material/Avatar';
+import * as React from 'react';
 import PropTypes from 'prop-types';
+import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Drawer, { drawerClasses } from '@mui/material/Drawer';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
-import NotificationsRoundedIcon from '@mui/icons-material/NotificationsRounded';
-import MenuButton from './MenuButton';
 import MenuContent from './MenuContent';
-import CardAlert from './CardAlert';
+import logoo from '../../assets/logoo.png'; // Ensure path matches your project structure
 
-function SideMenuMobile({ open, toggleDrawer }) {
+function SideMenuMobile({ open, toggleDrawer, activeTab }) {
+  // 1. User State Logic (Matching SideMenu.jsx)
+  const [user, setUser] = React.useState({
+    name: 'Admin User',
+    email: 'admin@campus.edu',
+    profileImage: ''
+  });
+
+  React.useEffect(() => {
+    try {
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      }
+    } catch (error) {
+      console.error("Failed to parse user data from localStorage:", error);
+    }
+  }, []);
+
   return (
     <Drawer
       anchor="right"
@@ -31,33 +49,79 @@ function SideMenuMobile({ open, toggleDrawer }) {
           height: '100%',
         }}
       >
-        <Stack direction="row" sx={{ p: 2, pb: 0, gap: 1 }}>
-          <Stack
-            direction="row"
-            sx={{ gap: 1, alignItems: 'center', flexGrow: 1, p: 1 }}
+        {/* HEADER: LOGO & BRANDING (Matching SideMenu.jsx) */}
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            p: 2,
+            gap: 1
+          }}
+        >
+          <img
+            src={logoo}
+            alt="EventFlow Logo"
+            style={{
+              height: '40px', // Slightly smaller for mobile header balance
+              width: 'auto',
+              objectFit: 'cover',
+              borderRadius: '8px'
+            }}
+          />
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: 700,
+              fontSize: '1.2rem',
+              color: '#1b129cff',
+              whiteSpace: 'nowrap',
+            }}
           >
+            Event Flow
+          </Typography>
+        </Box>
+        
+        <Divider />
+
+        {/* BODY: MENU CONTENT */}
+        <Stack sx={{ flexGrow: 1, overflowY: 'auto' }}>
+          <MenuContent activeTab={activeTab} />
+        </Stack>
+
+        <Divider />
+
+        {/* FOOTER: USER PROFILE & LOGOUT */}
+        <Stack sx={{ p: 2, gap: 2 }}>
+          {/* User Details */}
+          <Stack direction="row" gap={1} alignItems="center">
             <Avatar
               sizes="small"
-              alt="Riley Carter"
-              src="/static/images/avatar/7.jpg"
-              sx={{ width: 24, height: 24 }}
-            />
-            <Typography component="p" variant="h6">
-              Riley Carter
-            </Typography>
+              alt={user.name}
+              src={user.profileImage || "/static/images/avatar/7.jpg"}
+              sx={{ width: 36, height: 36 }}
+            >
+              {user.name?.charAt(0)}
+            </Avatar>
+            <Box sx={{ mr: 'auto', overflow: 'hidden' }}>
+              <Typography variant="body2" sx={{ fontWeight: 500, lineHeight: '16px', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                {user.name}
+              </Typography>
+              <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                {user.email}
+              </Typography>
+            </Box>
           </Stack>
-          <MenuButton showBadge>
-            <NotificationsRoundedIcon />
-          </MenuButton>
-        </Stack>
-        <Divider />
-        <Stack sx={{ flexGrow: 1 }}>
-          <MenuContent />
-          <Divider />
-        </Stack>
-        <CardAlert />
-        <Stack sx={{ p: 2 }}>
-          <Button variant="outlined" fullWidth startIcon={<LogoutRoundedIcon />}>
+
+          {/* Mobile Specific Logout Button */}
+          <Button 
+            variant="outlined" 
+            fullWidth 
+            startIcon={<LogoutRoundedIcon />}
+            onClick={() => {
+                // Add your logout logic here if needed
+                toggleDrawer(false)();
+            }}
+          >
             Logout
           </Button>
         </Stack>
@@ -69,6 +133,7 @@ function SideMenuMobile({ open, toggleDrawer }) {
 SideMenuMobile.propTypes = {
   open: PropTypes.bool,
   toggleDrawer: PropTypes.func.isRequired,
+  activeTab: PropTypes.string, // Added prop validation
 };
 
 export default SideMenuMobile;
